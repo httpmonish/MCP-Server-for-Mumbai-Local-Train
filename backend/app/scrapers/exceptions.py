@@ -6,6 +6,8 @@ class PortalAuthError(PortalException):
     """Raised when login fails."""
     pass
 
+PortalAuthenticationError = PortalAuthError
+
 class PortalSelectorError(PortalException):
     """Raised when a required DOM element is not found."""
     pass

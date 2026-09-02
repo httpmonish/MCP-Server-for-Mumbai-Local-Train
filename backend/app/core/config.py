@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     TELEGRAM_CHAT_ID: str = ""
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/mcp_production"
     ENCRYPTION_MASTER_KEY: str = "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE="
+    CHAOS_MODE_ENABLED: bool = False
 
     model_config = ConfigDict(env_file=".env", extra="ignore")
 

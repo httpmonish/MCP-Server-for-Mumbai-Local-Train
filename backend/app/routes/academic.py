@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 from ..core.config import settings
 from ..core.rate_limiter import limiter
+from ..scrapers.base_adapter import CampusAdapterRegistry
 from ..scrapers.exceptions import PortalAuthError
 from ..services.academic_orchestrator import AcademicOrchestrator
 
@@ -11,6 +12,7 @@ router = APIRouter(prefix="/api/v1/academic", tags=["Academic"])
 class CredentialsPayload(BaseModel):
     username: str
     password: str
+    campus_code: str = "MU_STANDARD"
 
 # In a real application, the orchestrator would be injected via a dependency
 # For this implementation, we define a provider function
@@ -29,7 +31,12 @@ async def get_attendance(
     orchestrator: AcademicOrchestrator = Depends(get_orchestrator)
 ):
     try:
-        return await orchestrator.get_attendance(student_id, payload.dict())
+        CampusAdapterRegistry.get_adapter(payload.campus_code)
+    except ValueError as val_err:
+        raise HTTPException(status_code=400, detail=str(val_err))
+
+    try:
+        return await orchestrator.get_attendance(student_id, payload.model_dump())
     except PortalAuthError as e:
         raise HTTPException(status_code=401, detail=str(e))
     except HTTPException:
