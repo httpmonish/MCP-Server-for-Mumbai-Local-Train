@@ -7,7 +7,11 @@ __pycache__/
 env/
 build/
 develop-eggs/
+# Node & Frontend
+node_modules/
 dist/
+.eslintcache
+.stylelintcache
 downloads/
 eggs/
 .eggs/
