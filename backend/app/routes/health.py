@@ -20,6 +20,7 @@ async def get_cache():
     return cache
 
 @router.get("/health")
+@router.get("/health/live")
 async def health_check():
     """Basic liveness probe."""
     return {
@@ -28,6 +29,7 @@ async def health_check():
     }
 
 @router.get("/ready")
+@router.get("/health/ready")
 async def readiness_check(
     db_session: AsyncSession = Depends(get_db_session),
     cache: RedisCache = Depends(get_cache)

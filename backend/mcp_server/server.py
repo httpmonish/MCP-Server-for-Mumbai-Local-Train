@@ -94,6 +94,12 @@ async def call_tool_handler(request):
 app.add_request_handler("list_tools", Any, list_tools_handler)
 app.add_request_handler("call_tool", Any, call_tool_handler)
 
+async def _app_list_tools():
+    return await list_tools_handler(None)
+
+app.list_tools = _app_list_tools
+
+
 async def run_mcp():
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         init_options = InitializationOptions(

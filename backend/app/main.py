@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -10,6 +11,15 @@ from .scrapers.college_portal import CollegePortalScraper
 from .services.academic_orchestrator import AcademicOrchestrator
 
 app = FastAPI(title="Academic MCP Data Server")
+
+# Setup CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Setup Rate Limiter
 app.state.limiter = limiter
