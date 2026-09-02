@@ -78,3 +78,9 @@ async def get_next_trains(db_session, cache: RedisCache, source: str, destinatio
     await cache.set(cache_key, matching_trains, 43200) # 12 Hours
 
     return {"data": matching_trains, "source": "database"}
+
+
+class TrainService:
+    get_next_trains = staticmethod(get_next_trains)
+    bulk_import_schedules = staticmethod(bulk_import_schedules)
+

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from .cache import RedisCache
 from .core.config import settings
 from .core.rate_limiter import limiter, rate_limit_handler
-from .routes import academic, health
+from .routes import academic, health, metrics, trains
 from .scrapers.college_portal import CollegePortalScraper
 from .services.academic_orchestrator import AcademicOrchestrator
 
@@ -36,6 +36,8 @@ app.state.orchestrator = orchestrator
 # Register Routers
 app.include_router(health.router)
 app.include_router(academic.router)
+app.include_router(trains.router)
+app.include_router(metrics.router)
 
 @app.on_event("shutdown")
 async def shutdown_event():

@@ -4,17 +4,17 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ..cache import RedisCache
-from ..main import app  # To access dependencies
 from ..services import train_service
 
 router = APIRouter(prefix="/api/v1/trains", tags=["Trains"])
 
 async def get_cache():
-    return app.state.cache
+    from ..main import cache
+    return cache
 
 async def get_db_session():
-    # Mocking session retrieval from app state
-    async with app.state.async_session_factory() as session:
+    from ..main import async_session_factory
+    async with async_session_factory() as session:
         yield session
 
 @router.get("/next")

@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     TTL_EXAMS: int = 86400     # 24 Hours TTL for exam timetables
     RATE_LIMIT_DEFAULT: str = "10/minute"
     SCRAPER_MAX_CONCURRENCY: int = 2  # Maximum parallel Playwright browser contexts
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/mcp_production"
 
     model_config = ConfigDict(env_file=".env", extra="ignore")
 
