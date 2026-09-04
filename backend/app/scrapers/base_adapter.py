@@ -33,6 +33,15 @@ class CampusAdapterRegistry:
     _registry: Dict[str, Type[BasePortalAdapter]] = {}
 
     @classmethod
+    def _ensure_loaded(cls) -> None:
+        """Ensure all built-in campus adapters are imported and registered."""
+        if not cls._registry:
+            try:
+                from . import adapters  # noqa: F401
+            except Exception:
+                pass
+
+    @classmethod
     def register(cls, campus_code: str) -> Callable[[Type[BasePortalAdapter]], Type[BasePortalAdapter]]:
         """Decorator to register a portal adapter strategy class."""
         def decorator(adapter_cls: Type[BasePortalAdapter]) -> Type[BasePortalAdapter]:
@@ -46,6 +55,7 @@ class CampusAdapterRegistry:
     @classmethod
     def get_adapter(cls, campus_code: str, **kwargs) -> BasePortalAdapter:
         """Instantiate and return the matching campus adapter or raise ValueError."""
+        cls._ensure_loaded()
         normalized_code = campus_code.upper()
         if normalized_code not in cls._registry:
             supported = [
@@ -61,6 +71,7 @@ class CampusAdapterRegistry:
     @classmethod
     def list_supported_campuses(cls) -> List[Dict[str, str]]:
         """Return registered campus codes and names."""
+        cls._ensure_loaded()
         return [
             {
                 "code": code,
