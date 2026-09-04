@@ -103,3 +103,35 @@ export interface ApiErrorResponse {
   stale?: boolean;
 }
 
+export interface CollegeInfo {
+  id: string;
+  name: string;
+  shortCode: string;
+  location: string;
+  nearestStation: string;
+  defaultLine: SuburbanLineCode;
+  portalUrl: string;
+  campusCode: string;
+}
+
+export interface DemoStudentProfile {
+  id: string;
+  name: string;
+  rollNo: string;
+  collegeId: string;
+  department: string;
+  standingCategory: "borderline" | "critical" | "safe";
+  homeStation: string;
+  attendanceData: AttendanceRecord[];
+}
+
+export interface AttendanceAnalytics {
+  totalConducted: number;
+  totalAttended: number;
+  percentage: number;
+  isAbove75: boolean;
+  deficitPct: number;
+  lecturesNeededTo75: number;
+  safeBunkBuffer: number;
+}
+

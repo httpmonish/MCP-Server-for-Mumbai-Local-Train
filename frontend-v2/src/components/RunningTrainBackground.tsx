@@ -8,267 +8,211 @@ interface RunningTrainProps {
 export const RunningTrainBackground: React.FC<RunningTrainProps> = () => {
   const { selectedLine } = useAuthStore();
 
-  // Livery themes matching line corridors
+  // Authentic Mumbai Suburban livery color palettes (Siemens / Bombardier rakes)
   const livery = useMemo(() => {
     switch (selectedLine) {
       case "WR":
         return {
-          stripe: "#2563EB",
-          stripeDark: "#1D4ED8",
-          accent: "#38BDF8",
-          tag: "WR • CHURCHGATE-VIRAR",
-          destBoard: "VIRAR FAST",
-          hornFreq: "440 Hz",
-          oheVoltage: "25 kV AC 50Hz",
+          name: "Western Railway Siemens/Bombardier",
+          baseBody: "from-slate-100 via-slate-50 to-slate-200",
+          primaryStripe: "#1E3A8A", // Deep Navy/Purple
+          secondaryStripe: "#F59E0B", // Safety Yellow
+          accentPinstripe: "#0284C7", // Sky Cyan
+          noseStripe: "#F59E0B",
+          destLed: "VIRAR FAST",
+          corridorTag: "WR • CHURCHGATE-VIRAR CORRIDOR",
         };
       case "HR":
         return {
-          stripe: "#059669",
-          stripeDark: "#047857",
-          accent: "#34D399",
-          tag: "HR • CSMT-PANVEL",
-          destBoard: "PANVEL LOCAL",
-          hornFreq: "420 Hz",
-          oheVoltage: "25 kV AC 50Hz",
+          name: "Harbour Line Suburban Rake",
+          baseBody: "from-slate-100 via-slate-50 to-slate-200",
+          primaryStripe: "#065F46", // Dark Emerald
+          secondaryStripe: "#FBBF24", // Yellow
+          accentPinstripe: "#10B981", // Green
+          noseStripe: "#F59E0B",
+          destLed: "PANVEL SLOW",
+          corridorTag: "HR • CSMT-VASHI-PANVEL CORRIDOR",
         };
       case "CR":
       default:
         return {
-          stripe: "#DC2626",
-          stripeDark: "#B91C1C",
-          accent: "#F87171",
-          tag: "CR • CSMT-KASARA",
-          destBoard: "KASARA FAST",
-          hornFreq: "450 Hz",
-          oheVoltage: "25 kV AC 50Hz",
+          name: "Central Railway Mumbai Local",
+          baseBody: "from-slate-100 via-slate-50 to-slate-200",
+          primaryStripe: "#7F1D1D", // Deep Central Maroon
+          secondaryStripe: "#F59E0B", // Iconic Yellow
+          accentPinstripe: "#DC2626", // Red
+          noseStripe: "#F59E0B",
+          destLed: "KASARA FAST",
+          corridorTag: "CR • CSMT-KALYAN-KASARA CORRIDOR",
         };
     }
   }, [selectedLine]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none">
-      {/* 1. Base Atmospheric Light Grey Canvas */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-100 via-slate-200/70 to-slate-300/40" />
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none bg-slate-100/90"
+      aria-hidden="true"
+    >
+      {/* 1. Base Light Grey Architectural Canvas */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-100 via-slate-50/70 to-slate-200/90" />
 
-      {/* 2. Static Moiré Interference Layer: Dual angled linear gratings with 3.2° phase delta */}
+      {/* 2. Static Moiré Interference Pattern (Subtle 45° vs 48.5° dual gratings) */}
       <div
-        className="absolute inset-0 opacity-40 mix-blend-multiply"
+        className="absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage: `
-            repeating-linear-gradient(45deg, rgba(148, 163, 184, 0.07) 0px, rgba(148, 163, 184, 0.07) 1px, transparent 1px, transparent 14px),
-            repeating-linear-gradient(48.5deg, rgba(100, 116, 139, 0.07) 0px, rgba(100, 116, 139, 0.07) 1px, transparent 1px, transparent 14px),
-            radial-gradient(circle at 50% 50%, rgba(203, 213, 225, 0.4) 0%, transparent 80%)
+            repeating-linear-gradient(45deg, #64748b 0, #64748b 1px, transparent 0, transparent 14px),
+            repeating-linear-gradient(48.5deg, #475569 0, #475569 1px, transparent 0, transparent 14px)
           `,
         }}
       />
 
-      {/* 3. Dynamic Moiré Wave Animation: Drifting optical mesh creating alive interference patterns */}
+      {/* 3. Dynamic Ambient Moiré Drift Layer */}
       <div
-        className="absolute inset-0 opacity-25 animate-moire-drift pointer-events-none"
+        className="absolute inset-0 opacity-[0.035] animate-moire-drift"
         style={{
           backgroundImage: `
-            repeating-linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0px, rgba(99, 102, 241, 0.04) 1px, transparent 1px, transparent 18px),
-            repeating-linear-gradient(137.5deg, rgba(244, 63, 94, 0.03) 0px, rgba(244, 63, 94, 0.03) 1px, transparent 1px, transparent 18px)
+            repeating-linear-gradient(135deg, #0284c7 0, #0284c7 1.5px, transparent 0, transparent 24px),
+            repeating-linear-gradient(137.5deg, #6366f1 0, #6366f1 1.5px, transparent 0, transparent 24px)
           `,
           backgroundSize: "200% 200%",
         }}
       />
 
-      {/* 4. Precision Blueprint Grid Lines with Micro Crosshairs */}
-      <svg className="absolute inset-0 w-full h-full opacity-35" xmlns="http://www.w3.org/2000/svg">
+      {/* 4. Fine Blueprint Grid Mesh */}
+      <svg className="absolute inset-0 w-full h-full opacity-40" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <pattern id="blueprint-grid" width="80" height="80" patternUnits="userSpaceOnUse">
-            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(148, 163, 184, 0.22)" strokeWidth="0.75" />
-            <path d="M 40 0 L 40 80 M 0 40 L 80 40" fill="none" stroke="rgba(148, 163, 184, 0.12)" strokeWidth="0.5" strokeDasharray="2 3" />
-            <circle cx="80" cy="0" r="1.5" fill="rgba(100, 116, 139, 0.3)" />
-            <circle cx="0" cy="80" r="1.5" fill="rgba(100, 116, 139, 0.3)" />
-            <path d="M 37 40 L 43 40 M 40 37 L 40 43" stroke="rgba(99, 102, 241, 0.25)" strokeWidth="0.75" />
+          <pattern id="bg-grid-mesh" width="80" height="80" patternUnits="userSpaceOnUse">
+            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(148, 163, 184, 0.18)" strokeWidth="0.75" />
+            <path d="M 40 0 L 40 80 M 0 40 L 80 40" fill="none" stroke="rgba(148, 163, 184, 0.08)" strokeWidth="0.5" strokeDasharray="2 3" />
+            <circle cx="80" cy="0" r="1.5" fill="rgba(100, 116, 139, 0.2)" />
+            <circle cx="0" cy="80" r="1.5" fill="rgba(100, 116, 139, 0.2)" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#blueprint-grid)" />
+        <rect width="100%" height="100%" fill="url(#bg-grid-mesh)" />
       </svg>
 
-      {/* 5. Handwritten Blueprint Annotations, Technical Stamps & Notes (Static Structure) */}
-      <div className="absolute inset-0 pointer-events-none text-slate-500/80">
-        {/* Top-left engineering stamp */}
-        <div className="absolute top-20 left-8 hidden lg:block -rotate-2 transform">
-          <div className="border border-slate-400/50 bg-white/40 backdrop-blur-xs px-3 py-1.5 rounded shadow-xs">
-            <div className="font-mono text-[9px] uppercase tracking-widest text-slate-400 font-bold">
-              SURVEY SPECIFICATION // CR-2026
-            </div>
-            <div className="font-blueprint text-sm text-slate-700 font-semibold tracking-wide">
-              Central Railway Northeast Corridor (Kasara Ghats)
-            </div>
-            <div className="font-hand text-xs text-rose-600/90 font-bold -mt-0.5">
-              1 in 37 Gradient • 120.8 km from CSMT Terminus ✍️
-            </div>
-          </div>
-        </div>
-
-        {/* Top-right technical note with sketch arrow */}
-        <div className="absolute top-24 right-12 hidden xl:block rotate-1 transform">
-          <div className="font-hand text-base text-indigo-700/80 font-bold leading-tight max-w-[220px]">
-            &ldquo;Timetable synchronized with today's m-Indicator master run sheet&rdquo;
-            <span className="block text-[11px] font-mono text-slate-400 font-normal mt-0.5">
-              Ref: OHE 25kV • 110 km/h Rake
-            </span>
-          </div>
-          <svg className="w-16 h-8 text-indigo-400/60 ml-12" viewBox="0 0 64 32" fill="none">
-            <path d="M 4 8 C 24 6, 44 18, 56 26" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" />
-            <path d="M 50 26 L 56 26 L 54 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </div>
-
-        {/* Bottom-left track engineering coordinates */}
-        <div className="absolute bottom-28 left-8 hidden md:block rotate-1">
-          <div className="font-mono text-[10px] text-slate-400/80 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500/70 inline-block animate-pulse" />
-            <span>TRACK CIRCUIT: TLA-KSRA SECTION 100% HEALTHY</span>
-            <span className="font-hand text-sm text-slate-600 font-bold">✓ Clear block</span>
-          </div>
-        </div>
-
-        {/* Bottom-right stamped badge */}
-        <div className="absolute bottom-24 right-8 hidden lg:block -rotate-3">
-          <div className="border-2 border-dashed border-slate-400/40 rounded-lg p-2 bg-slate-100/40 backdrop-blur-xs text-right">
-            <div className="font-mono text-[8px] tracking-widest uppercase text-slate-400">
-              COMMUTE ENGINE VERIFIED
-            </div>
-            <div className="font-blueprint text-xs text-slate-600 font-bold">
-              AUTONOMOUS SPEED MATRIX: ACTIVE
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. Distant Horizon: Silhouette Western Ghats / Mumbai Skyline */}
-      <div className="absolute bottom-20 left-0 right-0 h-32 opacity-15 pointer-events-none">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full text-slate-600 fill-current">
-          {/* Subtle rolling Sahyadri hills & Kasara Ghats ridge */}
-          <path d="M 0 120 L 0 75 Q 80 40, 160 65 T 320 50 T 480 80 T 640 45 T 800 65 T 960 40 T 1120 70 T 1200 60 L 1200 120 Z" />
-          {/* Faint distant transmission pylons & city silhouettes */}
-          <rect x="220" y="35" width="2" height="30" />
-          <path d="M 215 45 L 225 45 M 216 55 L 224 55" stroke="currentColor" strokeWidth="1.5" />
-          <rect x="740" y="25" width="2" height="40" />
-          <path d="M 735 35 L 745 35 M 736 48 L 744 48" stroke="currentColor" strokeWidth="1.5" />
+      {/* 5. Distant Sahyadri Mountains / Mumbai High-Rise Skyline Silhouettes */}
+      <div className="absolute bottom-28 left-0 right-0 h-36 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 1400 120" preserveAspectRatio="none" className="w-full h-full text-slate-500 fill-current">
+          {/* Subtle rolling Sahyadri Thal Ghats & Mumbai suburban outline */}
+          <path d="M 0 120 L 0 85 Q 90 50, 180 70 T 360 55 T 540 85 T 720 50 T 900 70 T 1080 45 T 1260 75 T 1400 65 L 1400 120 Z" />
+          {/* Transmission towers */}
+          <rect x="260" y="45" width="2" height="30" />
+          <path d="M 254 55 L 266 55 M 256 65 L 264 65" stroke="currentColor" strokeWidth="1.5" />
+          <rect x="850" y="35" width="2" height="40" />
+          <path d="M 844 45 L 856 45 M 846 58 L 854 58" stroke="currentColor" strokeWidth="1.5" />
         </svg>
       </div>
 
-      {/* 7. Railway Infrastructure Layer: Tracks, Overhead Electrification (OHE) Masts & Catenary */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none">
-        {/* Overhead Catenary Wire spanning across screen */}
-        <div className="absolute top-2 left-0 right-0 h-[1.5px] bg-slate-400/50 shadow-xs" />
-        <div className="absolute top-7 left-0 right-0 h-[1px] bg-slate-500/40" />
+      {/* 6. RAILWAY CORRIDOR INFRASTRUCTURE (Catenary, Masts, Rails, Sleepers) */}
+      <div className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none">
+        {/* Overhead 25 kV AC Catenary Wire */}
+        <div className="absolute top-3 left-0 right-0 h-[1.5px] bg-slate-400/70" />
+        {/* Contact Wire (where pantograph touches) */}
+        <div className="absolute top-10 left-0 right-0 h-[1.5px] bg-amber-700/60 shadow-xs" />
 
-        {/* Droppers (vertical wire supports connecting contact wire to catenary) */}
-        <div className="absolute top-2 left-0 right-0 h-5 flex justify-between px-2 opacity-30">
-          {Array.from({ length: 30 }).map((_, i) => (
+        {/* Dropper Wires */}
+        <div className="absolute top-3 left-0 right-0 h-7 flex justify-between px-3 opacity-35">
+          {Array.from({ length: 40 }).map((_, i) => (
             <div key={i} className="w-[1px] h-full bg-slate-500" />
           ))}
         </div>
 
-        {/* OHE Lattice Steel Masts repeating across */}
-        <div className="absolute top-0 left-0 right-0 h-24 flex justify-between px-10 opacity-40">
-          {Array.from({ length: 6 }).map((_, i) => (
+        {/* OHE Steel Lattice Portal Masts */}
+        <div className="absolute top-0 left-0 right-0 h-32 flex justify-between px-12 opacity-40">
+          {Array.from({ length: 7 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center">
-              <div className="w-8 h-2 border-t-2 border-slate-500 -mt-1" />
-              <div className="w-2.5 h-20 border-l border-r border-slate-500 relative">
-                {/* Internal cross bracing */}
-                <div className="absolute inset-0 flex flex-col justify-between py-1 opacity-60">
-                  <div className="w-full h-[1px] bg-slate-500" />
-                  <div className="w-full h-[1px] bg-slate-500 rotate-45" />
-                  <div className="w-full h-[1px] bg-slate-500" />
-                  <div className="w-full h-[1px] bg-slate-500 -rotate-45" />
+              <div className="w-10 h-2.5 border-t-2 border-slate-600 -mt-1" />
+              <div className="w-3 h-28 border-l border-r border-slate-600 relative">
+                {/* Cross Bracing */}
+                <div className="absolute inset-0 flex flex-col justify-between py-1 opacity-50">
+                  <div className="w-full h-[1px] bg-slate-600" />
+                  <div className="w-full h-[1px] bg-slate-600 rotate-45" />
+                  <div className="w-full h-[1px] bg-slate-600" />
+                  <div className="w-full h-[1px] bg-slate-600 -rotate-45" />
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Signal Aspect Gantry on right */}
-        <div className="absolute top-4 right-28 flex flex-col items-center opacity-60">
-          <div className="w-3 h-7 rounded-sm bg-slate-800 p-0.5 flex flex-col justify-between items-center shadow-xs">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10B981]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+        {/* 3-Aspect Automatic Block Signaling */}
+        <div className="absolute top-6 right-36 flex flex-col items-center opacity-70">
+          <div className="w-3.5 h-9 rounded-md bg-slate-900 p-0.5 flex flex-col justify-between items-center shadow-md border border-slate-700">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34D399]" />
+            <div className="w-2 h-2 rounded-full bg-slate-800" />
+            <div className="w-2 h-2 rounded-full bg-slate-800" />
           </div>
-          <div className="w-1 h-14 bg-slate-700" />
+          <div className="w-1.5 h-20 bg-slate-700" />
         </div>
 
-        {/* Concrete Viaduct Pier & Trackbed */}
-        <div className="absolute bottom-6 left-0 right-0 h-8 bg-gradient-to-b from-slate-300 to-slate-400/80 border-t-2 border-slate-400 shadow-inner" />
+        {/* Concrete Viaduct Deck & Ballast Bed */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-slate-300 via-slate-400/80 to-slate-500 border-t-2 border-slate-400 shadow-inner" />
 
-        {/* Dual Steel Rails */}
-        <div className="absolute bottom-11 left-0 right-0 h-1 bg-slate-600/90 shadow-[0_1px_2px_rgba(0,0,0,0.2)]" />
-        <div className="absolute bottom-8 left-0 right-0 h-1 bg-slate-600/90 shadow-[0_1px_2px_rgba(0,0,0,0.2)]" />
-
-        {/* Concrete Sleepers under tracks */}
-        <div className="absolute bottom-7 left-0 right-0 h-6 flex justify-between px-1 opacity-45">
-          {Array.from({ length: 80 }).map((_, i) => (
-            <div key={i} className="w-1.5 h-full bg-slate-700 rounded-xs shadow-xs" />
+        {/* Pre-stressed Concrete Sleepers */}
+        <div className="absolute bottom-7 left-0 right-0 h-7 flex justify-between px-1 opacity-60">
+          {Array.from({ length: 90 }).map((_, i) => (
+            <div key={i} className="w-2 h-full bg-slate-700 rounded-xs shadow-xs" />
           ))}
         </div>
 
-        {/* Ballast Stone Texture */}
-        <div className="absolute bottom-0 left-0 right-0 h-7 bg-slate-400/60 border-t border-slate-400" />
+        {/* Double Running Rails (Steel 60kg/m) with gleaming rail-head shine */}
+        <div className="absolute bottom-13 left-0 right-0 h-1.5 bg-gradient-to-b from-slate-200 via-slate-500 to-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.4)]" />
+        <div className="absolute bottom-9 left-0 right-0 h-1.5 bg-gradient-to-b from-slate-200 via-slate-500 to-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.4)]" />
       </div>
 
-      {/* 8. DYNAMIC RUNNING TRAIN ANIMATION */}
-      {/* Train moves smoothly from Left to Right in a continuous 16-second loop */}
-      <div className="absolute bottom-10 left-0 w-full overflow-visible pointer-events-none animate-train-traverse">
-        <div className="inline-flex items-end relative filter drop-shadow-md">
-          {/* Headlamp Forward Beam projection */}
-          <div className="absolute -right-36 bottom-2 w-48 h-12 bg-gradient-to-r from-amber-200/50 via-amber-100/20 to-transparent transform -skew-x-12 blur-xs pointer-events-none" />
+      {/* 7. AUTHENTIC DYNAMIC RUNNING MUMBAI LOCAL EMU TRAIN */}
+      {/* Moves smoothly across the screen in an infinite traversing loop */}
+      <div className="absolute bottom-11 left-0 w-full overflow-visible pointer-events-none animate-train-traverse">
+        <div className="inline-flex items-end relative filter drop-shadow-lg">
+          {/* Volumetric Headlight High-Beam sweeping forward onto track */}
+          <div className="absolute -right-48 bottom-3 w-64 h-16 bg-gradient-to-r from-amber-300/40 via-amber-200/20 to-transparent transform -skew-x-12 blur-xs pointer-events-none" />
 
-          {/* Coach 1: Rear Cab / Trailing Coach */}
-          <EmuCoach
-            isCab={true}
+          {/* Coach 1: Trailing Cab Coach */}
+          <RealMumbaiEmuCoach
+            coachType="cab"
             isLeading={false}
             hasPantograph={false}
-            liveryColor={livery.stripe}
-            accentColor={livery.accent}
-            coachCode="CAB-401"
+            livery={livery}
+            coachNumber="9401"
           />
 
-          {/* Coach 2: Standard Passenger Trailer */}
-          <EmuCoach
-            isCab={false}
+          {/* Coach 2: Standard Second Class Coach */}
+          <RealMumbaiEmuCoach
+            coachType="trailer"
             isLeading={false}
             hasPantograph={false}
-            liveryColor={livery.stripe}
-            accentColor={livery.accent}
-            coachCode="TC-402"
+            livery={livery}
+            coachNumber="9402"
           />
 
-          {/* Coach 3: Motor Coach with Active Pantograph */}
-          <EmuCoach
-            isCab={false}
+          {/* Coach 3: Motor Coach with Diamond Pantograph & Arcing Sparks */}
+          <RealMumbaiEmuCoach
+            coachType="motor"
             isLeading={false}
             hasPantograph={true}
-            liveryColor={livery.stripe}
-            accentColor={livery.accent}
-            coachCode="MC-403"
+            livery={livery}
+            coachNumber="9403"
           />
 
-          {/* Coach 4: Standard Passenger Trailer */}
-          <EmuCoach
-            isCab={false}
+          {/* Coach 4: Ladies / First Class Coach */}
+          <RealMumbaiEmuCoach
+            coachType="trailer"
             isLeading={false}
             hasPantograph={false}
-            liveryColor={livery.stripe}
-            accentColor={livery.accent}
-            coachCode="TC-404"
+            livery={livery}
+            coachNumber="9404"
           />
 
-          {/* Coach 5: Leading Motor Cab Coach with Windshield & Destination Board */}
-          <EmuCoach
-            isCab={true}
+          {/* Coach 5: Leading Driver Cab (Distinctive Aerodynamic Front Nose) */}
+          <RealMumbaiEmuCoach
+            coachType="cab"
             isLeading={true}
             hasPantograph={false}
-            liveryColor={livery.stripe}
-            accentColor={livery.accent}
-            coachCode="CAB-405"
-            destBoard={livery.destBoard}
+            livery={livery}
+            coachNumber="9405"
+            destinationText={livery.destLed}
           />
         </div>
       </div>
@@ -276,144 +220,209 @@ export const RunningTrainBackground: React.FC<RunningTrainProps> = () => {
   );
 };
 
-interface EmuCoachProps {
-  isCab: boolean;
+// ============================================================================
+// REALISTIC MUMBAI LOCAL EMU COACH COMPONENT
+// Features: Siemens/Bombardier curved nose, grab rails, commuter silhouettes,
+// stainless steel fluted rib panels, yellow/maroon/navy racing stripes,
+// destination LED display, spinning wheel bogies, pantograph sparks.
+// ============================================================================
+interface RealCoachProps {
+  coachType: "cab" | "trailer" | "motor";
   isLeading: boolean;
   hasPantograph: boolean;
-  liveryColor: string;
-  accentColor: string;
-  coachCode: string;
-  destBoard?: string;
+  livery: {
+    baseBody: string;
+    primaryStripe: string;
+    secondaryStripe: string;
+    accentPinstripe: string;
+    noseStripe: string;
+  };
+  coachNumber: string;
+  destinationText?: string;
 }
 
-const EmuCoach: React.FC<EmuCoachProps> = ({
-  isCab,
+const RealMumbaiEmuCoach: React.FC<RealCoachProps> = ({
+  coachType,
   isLeading,
   hasPantograph,
-  liveryColor,
-  accentColor,
-  coachCode,
-  destBoard,
+  livery,
+  coachNumber,
+  destinationText,
 }) => {
+  const isCab = coachType === "cab";
+
   return (
     <div className="relative flex flex-col items-center">
-      {/* Pantograph (for Motor Coach) */}
-      {hasPantograph && (
-        <div className="w-16 h-6 relative -mb-0.5 flex flex-col items-center">
-          {/* Top contact strip sliding under catenary */}
-          <div className="w-10 h-0.5 bg-slate-800 relative">
-            {/* Pantograph Electric Spark Effect */}
-            <div className="absolute -top-1 left-4 w-2 h-2 rounded-full bg-cyan-300 animate-spark opacity-80 blur-xs" />
+      {/* 1. ROOF EQUIPMENT & PANTOGRAPH */}
+      <div className="w-full h-7 relative flex justify-center items-end">
+        {hasPantograph && (
+          <div className="w-20 h-7 relative flex flex-col items-center justify-end -mb-0.5">
+            {/* Carbon Contact Strip sliding on 25kV Catenary */}
+            <div className="w-14 h-1 bg-slate-900 relative rounded-full">
+              {/* Electric Contact Arc Spark (Cyan Glow) */}
+              <div className="absolute -top-1.5 left-5 w-3 h-3 rounded-full bg-cyan-300 animate-spark opacity-90 blur-xs" />
+              <div className="absolute -top-1 left-9 w-2 h-2 rounded-full bg-white animate-pulse" />
+            </div>
+            {/* Pantograph Scissor Articulated Frame */}
+            <div className="w-8 h-5 border-t-2 border-l border-r border-slate-800 -rotate-12 transform origin-bottom scale-y-110" />
+            {/* High Voltage Base Insulators (Orange Ceramic) */}
+            <div className="w-12 h-1.5 flex justify-between px-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-600 border border-slate-800" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-600 border border-slate-800" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-600 border border-slate-800" />
+            </div>
           </div>
-          {/* Diamond scissor frame */}
-          <div className="w-6 h-5 border-t border-l border-r border-slate-700 -rotate-12 transform origin-bottom scale-y-110" />
-          <div className="w-8 h-1 bg-slate-800 rounded-sm" />
-        </div>
-      )}
+        )}
 
-      {/* Main Coach Body */}
+        {/* Roof Air Vents & Resistor Banks */}
+        {!hasPantograph && (
+          <div className="w-3/4 h-2 flex justify-around px-2 mb-0.5">
+            <div className="w-8 h-1.5 bg-slate-400 rounded-t-sm border-t border-slate-500" />
+            <div className="w-8 h-1.5 bg-slate-400 rounded-t-sm border-t border-slate-500" />
+            <div className="w-8 h-1.5 bg-slate-400 rounded-t-sm border-t border-slate-500" />
+          </div>
+        )}
+      </div>
+
+      {/* 2. MAIN EMU COACH BODY */}
       <div
-        className={`h-11 ${
-          isCab ? "w-44" : "w-40"
-        } bg-gradient-to-b from-slate-200 via-slate-100 to-slate-300 border-t border-b border-slate-400 relative flex flex-col justify-between overflow-hidden shadow-sm ${
-          isCab && isLeading ? "rounded-r-2xl" : isCab && !isLeading ? "rounded-l-2xl" : "rounded-none"
+        className={`h-14 ${
+          isCab ? "w-48" : "w-44"
+        } bg-gradient-to-b ${livery.baseBody} border-t-2 border-b border-slate-500 relative flex flex-col justify-between overflow-hidden shadow-md ${
+          isCab && isLeading
+            ? "rounded-r-3xl border-r-2 border-slate-600"
+            : isCab && !isLeading
+            ? "rounded-l-2xl border-l-2 border-slate-600"
+            : "rounded-none"
         }`}
       >
-        {/* Upper Roof Ribs */}
-        <div className="w-full h-1 bg-slate-300/80 border-b border-slate-400/40 flex justify-around">
-          <div className="w-6 h-full bg-slate-400/40" />
-          <div className="w-6 h-full bg-slate-400/40" />
-          <div className="w-6 h-full bg-slate-400/40" />
+        {/* Stainless Steel Fluted Corrugated Roof Ribs */}
+        <div className="w-full h-1.5 bg-slate-300/90 border-b border-slate-400/60 flex justify-between px-1">
+          <div className="w-full h-0.5 bg-slate-400/40 mt-0.5" />
         </div>
 
-        {/* Windows & Doors Row */}
+        {/* Upper Yellow Safety Stripe */}
+        <div className="w-full h-1" style={{ backgroundColor: livery.secondaryStripe }} />
+
+        {/* WINDOWS & OPEN DOORWAYS ROW */}
         <div className="flex items-center justify-between px-2 py-0.5">
+          {/* Rear Driver Windshield (if trailing cab) */}
           {isCab && !isLeading && (
-            <div className="w-3.5 h-5 bg-cyan-900/80 rounded-l-md border border-slate-600 shadow-inner" />
+            <div className="w-4 h-6 bg-slate-800 rounded-l-md border border-slate-600 shadow-inner flex items-center justify-center">
+              <div className="w-1 h-3 bg-red-600 rounded-xs shadow-[0_0_5px_#DC2626]" />
+            </div>
           )}
 
-          {/* Door 1 */}
-          <div className="w-3.5 h-7 bg-slate-800/85 rounded-xs border border-slate-600 flex flex-col justify-center items-center">
-            <div className="w-1 h-3 bg-amber-100/90 rounded-xs" />
+          {/* MUMBAI LOCAL DOORWAY 1 (Wide Open with Center Grab Pole) */}
+          <div className="w-5 h-8 bg-slate-900 rounded-xs border border-slate-700 relative overflow-hidden flex items-center justify-center">
+            {/* Stainless steel center divider pole */}
+            <div className="w-0.5 h-full bg-slate-300 z-10" />
+            {/* Commuter silhouette standing at doorway */}
+            <div className="absolute bottom-0 left-0.5 w-2 h-5 bg-slate-700/80 rounded-t-xs" />
           </div>
 
-          {/* Windows Cluster (Passenger compartment with warm interior light) */}
+          {/* PASSENGER WINDOW BAY (Warm Interior Lighting + Guard Grills) */}
           <div className="flex gap-1.5">
-            <div className="w-5 h-4 bg-amber-100/85 border border-slate-500 rounded-xs shadow-inner relative overflow-hidden">
-              <div className="absolute top-1 left-1 w-1.5 h-2 bg-slate-700/40 rounded-full" />
+            <div className="w-6 h-5 bg-amber-100/90 border border-slate-500 rounded-xs shadow-inner relative overflow-hidden flex flex-col justify-center">
+              {/* Window horizontal protection bars */}
+              <div className="w-full h-[0.5px] bg-slate-600/60 my-0.5" />
+              <div className="w-full h-[0.5px] bg-slate-600/60" />
+              {/* Commuter silhouette */}
+              <div className="absolute top-1 left-2 w-2 h-2.5 bg-slate-700/50 rounded-full" />
             </div>
-            <div className="w-5 h-4 bg-amber-100/85 border border-slate-500 rounded-xs shadow-inner relative overflow-hidden">
-              <div className="absolute top-1 left-2 w-1.5 h-2 bg-slate-700/40 rounded-full" />
+
+            <div className="w-6 h-5 bg-amber-100/90 border border-slate-500 rounded-xs shadow-inner relative overflow-hidden flex flex-col justify-center">
+              <div className="w-full h-[0.5px] bg-slate-600/60 my-0.5" />
+              <div className="w-full h-[0.5px] bg-slate-600/60" />
+              <div className="absolute top-1 left-2.5 w-2 h-2.5 bg-slate-700/50 rounded-full" />
             </div>
-            <div className="w-5 h-4 bg-amber-100/85 border border-slate-500 rounded-xs shadow-inner" />
+
+            <div className="w-6 h-5 bg-amber-100/90 border border-slate-500 rounded-xs shadow-inner relative overflow-hidden flex flex-col justify-center">
+              <div className="w-full h-[0.5px] bg-slate-600/60 my-0.5" />
+              <div className="w-full h-[0.5px] bg-slate-600/60" />
+            </div>
           </div>
 
-          {/* Door 2 */}
-          <div className="w-3.5 h-7 bg-slate-800/85 rounded-xs border border-slate-600 flex flex-col justify-center items-center">
-            <div className="w-1 h-3 bg-amber-100/90 rounded-xs" />
+          {/* MUMBAI LOCAL DOORWAY 2 */}
+          <div className="w-5 h-8 bg-slate-900 rounded-xs border border-slate-700 relative overflow-hidden flex items-center justify-center">
+            <div className="w-0.5 h-full bg-slate-300 z-10" />
+            <div className="absolute bottom-0 right-0.5 w-2 h-5 bg-slate-700/80 rounded-t-xs" />
           </div>
 
-          {/* Leading Cab Windshield & Destination LED Header */}
+          {/* LEADING DRIVER CAB FRONT NOSE (Curved Aerodynamic Windshield + LED Board) */}
           {isCab && isLeading && (
             <div className="flex flex-col items-end gap-0.5 mr-0.5">
-              {destBoard && (
-                <div className="bg-slate-950 text-amber-400 font-mono text-[6px] px-1 py-0.2 rounded-xs tracking-tighter uppercase font-bold">
-                  {destBoard}
+              {/* Amber LED Destination Display Board */}
+              {destinationText && (
+                <div className="bg-black text-amber-400 font-mono text-[6px] px-1.5 py-0.2 rounded-xs tracking-tighter uppercase font-black shadow-xs border border-amber-500/40">
+                  {destinationText}
                 </div>
               )}
-              <div className="w-6 h-5 bg-gradient-to-r from-cyan-900 to-sky-700 rounded-r-xl border border-slate-600 shadow-inner flex items-center justify-end pr-0.5">
-                {/* Twin High-Intensity LED Headlights */}
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-200 shadow-[0_0_6px_#FEF08A] border border-amber-300 animate-pulse" />
+
+              {/* Curved Windshield with Driver Silhouette */}
+              <div className="w-8 h-6 bg-gradient-to-r from-slate-900 to-sky-950 rounded-r-2xl border-2 border-slate-600 shadow-inner flex items-center justify-between px-1 relative">
+                {/* Windshield wiper */}
+                <div className="w-2.5 h-0.5 bg-slate-400 rotate-45 transform origin-left" />
+
+                {/* TWIN HIGH-INTENSITY LED HEADLIGHTS */}
+                <div className="flex flex-col gap-0.5">
+                  <div className="w-2 h-2 rounded-full bg-amber-200 shadow-[0_0_8px_#FEF08A] border border-amber-300 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-amber-200 shadow-[0_0_8px_#FEF08A] border border-amber-300 animate-pulse" />
+                </div>
               </div>
             </div>
           )}
         </div>
 
         {/* Accent Pinstripe */}
-        <div className="w-full h-0.5" style={{ backgroundColor: accentColor }} />
+        <div className="w-full h-0.5" style={{ backgroundColor: livery.accentPinstripe }} />
 
-        {/* Lower Livery Racing Stripe (Central Red / Western Blue / Harbour Green) */}
+        {/* ICONIC LOWER RACING STRIPE (Central Maroon / Western Navy / Harbour Emerald) */}
         <div
-          className="w-full h-2 flex items-center justify-between px-2"
-          style={{ backgroundColor: liveryColor }}
+          className="w-full h-3 flex items-center justify-between px-2.5 relative"
+          style={{ backgroundColor: livery.primaryStripe }}
         >
-          <span className="font-mono text-[6px] text-white/90 font-bold uppercase tracking-widest">
-            {coachCode}
+          {/* Coach Number Designation */}
+          <span className="font-mono text-[7px] text-white font-black uppercase tracking-widest">
+            {coachNumber}
           </span>
-          <div className="w-8 h-0.5 bg-white/60" />
+          {/* Middle yellow hazard warning band on nose */}
+          {isCab && isLeading && (
+            <div
+              className="absolute right-0 top-0 bottom-0 w-4 rounded-r-3xl"
+              style={{ backgroundColor: livery.noseStripe }}
+            />
+          )}
+          <span className="font-mono text-[6px] text-amber-300 font-bold uppercase tracking-wider">
+            CR-SUBURBAN
+          </span>
         </div>
       </div>
 
-      {/* Undercarriage Bogies & Wheels */}
-      <div className="w-full flex justify-around px-3 -mt-0.5">
-        {/* Bogie 1 */}
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center animate-spin">
+      {/* 3. UNDERCARRIAGE BOGIES & STEEL WHEELS */}
+      <div className="w-full flex justify-around px-4 -mt-1">
+        {/* Bogie 1 (Front Axle) */}
+        <div className="flex items-center gap-2 bg-slate-900/90 px-1 py-0.5 rounded-sm border border-slate-700">
+          <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-slate-500 flex items-center justify-center animate-spin">
             <div className="w-1 h-1 rounded-full bg-slate-400" />
           </div>
-          <div className="w-2 h-0.5 bg-slate-700" />
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center animate-spin">
+          <div className="w-2 h-1 bg-amber-700 rounded-xs" />
+          <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-slate-500 flex items-center justify-center animate-spin">
             <div className="w-1 h-1 rounded-full bg-slate-400" />
           </div>
         </div>
 
-        {/* Battery box / Under-slung transformer equipment */}
-        <div className="w-6 h-1.5 bg-slate-800 rounded-xs border border-slate-600" />
-
-        {/* Bogie 2 */}
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center animate-spin">
+        {/* Bogie 2 (Rear Axle) */}
+        <div className="flex items-center gap-2 bg-slate-900/90 px-1 py-0.5 rounded-sm border border-slate-700">
+          <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-slate-500 flex items-center justify-center animate-spin">
             <div className="w-1 h-1 rounded-full bg-slate-400" />
           </div>
-          <div className="w-2 h-0.5 bg-slate-700" />
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center animate-spin">
+          <div className="w-2 h-1 bg-amber-700 rounded-xs" />
+          <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-slate-500 flex items-center justify-center animate-spin">
             <div className="w-1 h-1 rounded-full bg-slate-400" />
           </div>
         </div>
       </div>
-
-      {/* Inter-coach coupler */}
-      <div className="absolute right-[-4px] bottom-2 w-2 h-1 bg-slate-700" />
     </div>
   );
 };

@@ -4,9 +4,9 @@ import type { AttendanceResponse, ExamResponse } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
 
 export function useAttendance() {
-  const { studentId, username, password } = useAuthStore();
+  const { studentId, username, password, customAttendanceOverride } = useAuthStore();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["academic", "attendance", studentId],
     queryFn: async () => {
       return apiClient<AttendanceResponse>(
@@ -17,7 +17,7 @@ export function useAttendance() {
         }
       );
     },
-    enabled: Boolean(studentId && username && password),
+    enabled: Boolean(studentId && username && password && !customAttendanceOverride),
     staleTime: 1000 * 60 * 30, // 30 Minutes
     gcTime: 1000 * 60 * 60 * 2, // 2 Hours
     retry: (failureCount, error: any) => {
@@ -25,6 +25,24 @@ export function useAttendance() {
       return failureCount < 2;
     },
   });
+
+  if (customAttendanceOverride) {
+    return {
+      ...query,
+      data: {
+        data: customAttendanceOverride,
+        source: "database" as const,
+        stale: false,
+        last_synced_at: new Date().toISOString(),
+      },
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: query.refetch,
+    };
+  }
+
+  return query;
 }
 
 export function useExams() {
