@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AttendanceCard } from "./components/AttendanceCard";
@@ -16,42 +16,62 @@ import {
   Zap,
   Building2,
   UserCheck,
+  ArrowRight,
+  ChevronRight,
 } from "lucide-react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
+    queries: { refetchOnWindowFocus: false },
   },
 });
 
+/* ─── Ticker content ─── */
+const TICKER_ITEMS = [
+  "CR KASARA CORRIDOR — 37 STATIONS ACTIVE",
+  "WR VIRAR FAST — PUNCTUALITY 99.1%",
+  "HR PANVEL SERVICE — ON TIME",
+  "SUBURBAN RADAR LIVE — MCP ENGINE v2.5",
+  "CSMT ↔ KASARA — FULL TOPOLOGY VERIFIED",
+  "AUTOMATED ATTENDANCE SYNC — ENABLED",
+  "MUMBAI SUBURBAN RAILWAY NETWORK — OPERATIONAL",
+];
+
+/* ─── Animated counter ─── */
+function useCounter(target: number, duration = 1200) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const step = Math.ceil(target / (duration / 16));
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { setValue(target); clearInterval(timer); }
+      else setValue(start);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration]);
+  return value;
+}
+
 export const Dashboard: React.FC = () => {
   const {
-    studentId,
-    username,
-    selectedLine,
-    selectedCollegeId,
-    activeProfileId,
-    setStudentId,
-    setCredentials,
-    setSelectedCollegeId,
-    loadDemoProfile,
+    studentId, username, selectedLine, selectedCollegeId, activeProfileId,
+    setStudentId, setCredentials, setSelectedCollegeId, loadDemoProfile,
   } = useAuthStore();
 
   const [showConfig, setShowConfig] = useState(false);
-  const [tempId, setTempId] = useState(studentId);
-  const [tempUser, setTempUser] = useState(username);
-  const [tempPass, setTempPass] = useState("");
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+  const [tempId, setTempId]         = useState(studentId);
+  const [tempUser, setTempUser]     = useState(username);
+  const [tempPass, setTempPass]     = useState("");
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [mounted, setMounted]       = useState(false);
 
   const { data: networkStatus } = useNetworkStatus();
 
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(interval);
+    const t = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(t);
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
@@ -61,197 +81,243 @@ export const Dashboard: React.FC = () => {
     setShowConfig(false);
   };
 
-  const selectedCollege =
-    MUMBAI_COLLEGES.find((c) => c.id === selectedCollegeId) || MUMBAI_COLLEGES[0];
+  const selectedCollege = MUMBAI_COLLEGES.find((c) => c.id === selectedCollegeId) || MUMBAI_COLLEGES[0];
+
+  const hours   = currentTime.getHours().toString().padStart(2, "0");
+  const minutes = currentTime.getMinutes().toString().padStart(2, "0");
+  const seconds = currentTime.getSeconds().toString().padStart(2, "0");
+
+  const tickerContent = TICKER_ITEMS.join("  ·  ") + "  ·  ";
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden text-slate-800 antialiased font-sans">
-      {/* 1. Authentic Mumbai Local EMU & Parallax Track Background */}
+    <div style={{ minHeight: "100vh", position: "relative", overflowX: "hidden", color: "var(--c-white)" }}>
+      {/* ── Scan line ── */}
+      <div className="tp-scanline" />
+
+      {/* ── 1. Video Background ── */}
       <RunningTrainBackground />
 
-      {/* 2. Top Network Signal & Live Telemetry Ticker (Frosted Slate) */}
-      <div className="relative z-20 bg-slate-900/95 backdrop-blur-md text-slate-200 text-xs px-4 py-2 border-b border-slate-800 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-2.5 w-2.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_8px_#10B981]" />
-            </span>
-            <span className="font-mono font-bold text-[11px] tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-emerald-400" />
-              SUBURBAN RADAR LIVE
-            </span>
-            <span className="hidden sm:inline-block font-hand text-sm text-emerald-300 font-bold ml-1">
-              (Central Kasara • Western • Harbour synced)
-            </span>
+      {/* ── 2. Ticker Bar ── */}
+      <div className="tp-ticker-bar relative z-30 py-2">
+        <div style={{ display: "flex", alignItems: "center", gap: 16, overflow: "hidden" }}>
+          {/* Live badge */}
+          <div style={{
+            flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+            padding: "4px 16px", borderRight: "1px solid rgba(171,255,2,0.15)",
+          }}>
+            <span className="tp-lime-dot-pulse" />
+            <span className="tp-label" style={{ color: "var(--c-lime)" }}>LIVE</span>
           </div>
-
-          {/* Line Telemetry Metrics */}
-          <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono">
-            {/* Central Line */}
-            <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-0.5 rounded-lg border border-slate-700">
-              <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#F43F5E]" />
-              <span className="font-bold text-white">CR:</span>
-              <span className="text-emerald-400 font-semibold">
-                {networkStatus?.lines?.CR?.status || "On Time"}
-              </span>
-              <span className="text-slate-400">({networkStatus?.lines?.CR?.punctuality || "98.2%"})</span>
-            </div>
-
-            {/* Western Line */}
-            <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-0.5 rounded-lg border border-slate-700">
-              <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_6px_#3B82F6]" />
-              <span className="font-bold text-white">WR:</span>
-              <span className="text-emerald-400 font-semibold">
-                {networkStatus?.lines?.WR?.status || "On Time"}
-              </span>
-              <span className="text-slate-400">({networkStatus?.lines?.WR?.punctuality || "99.1%"})</span>
-            </div>
-
-            {/* Harbour Line */}
-            <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-0.5 rounded-lg border border-slate-700">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10B981]" />
-              <span className="font-bold text-white">HR:</span>
-              <span className="text-emerald-400 font-semibold">
-                {networkStatus?.lines?.HR?.status || "Normal"}
-              </span>
-              <span className="text-slate-400">({networkStatus?.lines?.HR?.punctuality || "97.8%"})</span>
+          {/* Scrolling ticker */}
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            <div className="tp-ticker-track tp-label" style={{ color: "var(--c-gray-dim)" }}>
+              {tickerContent}{tickerContent}
             </div>
           </div>
-
-          <div className="hidden lg:flex items-center gap-2 text-[11px] font-mono text-slate-300">
-            <Clock className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">IST {currentTime}</span>
+          {/* IST Clock */}
+          <div style={{
+            flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+            padding: "4px 16px", borderLeft: "1px solid rgba(171,255,2,0.15)",
+          }}>
+            <span className="tp-label" style={{ color: "var(--c-gray-dim)" }}>IST</span>
+            <span className="tp-label-lg" style={{ color: "var(--c-white)" }}>
+              {hours}:{minutes}:{seconds}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* 3. Executive Command Header with Glassmorphism */}
-      <header className="relative z-20 bg-white/90 backdrop-blur-xl border-b border-slate-200/90 sticky top-0 px-4 sm:px-8 py-3.5 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-          <div className="flex items-center gap-3.5">
-            {/* Logo Emblem with Mumbai EMU icon */}
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-950 flex items-center justify-center text-white shadow-md shadow-slate-300/60 border border-slate-700/40 relative overflow-hidden group">
-              <Train className="w-5 h-5 text-indigo-200 group-hover:scale-110 transition-transform" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+      {/* ── 3. Main Header ── */}
+      <header className="tp-header relative z-30 px-6 sm:px-10 py-4 sticky top-0">
+        <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+          {/* Logo + Wordmark */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <img
+                src="/logo.jpg"
+                alt="TransitPulse Logo"
+                style={{
+                  width: 44, height: 44, borderRadius: 10,
+                  objectFit: "cover",
+                  border: "1px solid rgba(171,255,2,0.3)",
+                  boxShadow: "0 0 20px rgba(171,255,2,0.15)",
+                  transition: "box-shadow 0.3s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 0 32px rgba(171,255,2,0.35)")}
+                onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 0 20px rgba(171,255,2,0.15)")}
+              />
+              {/* Live indicator */}
+              <span style={{
+                position: "absolute", top: -3, right: -3,
+                width: 10, height: 10, borderRadius: "50%",
+                background: "var(--c-lime)",
+                boxShadow: "0 0 8px var(--c-lime)",
+                border: "2px solid var(--c-void)",
+              }} />
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                  Campus & Commute
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <h1 className="tp-h1" style={{ fontSize: "1.375rem", color: "var(--c-white)" }}>
+                  Transit<span style={{ color: "var(--c-lime)" }}>Pulse</span>
                 </h1>
-                <span className="text-[10px] bg-slate-900 text-white font-mono font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  OPS-DESK
-                </span>
-                <span className="hidden md:inline-block font-hand text-base text-rose-600 font-bold -rotate-1">
-                  Today's m-Indicator Master Run Sheet ✍️
+                <span className="tp-label" style={{
+                  color: "var(--c-lime)", background: "rgba(171,255,2,0.08)",
+                  border: "1px solid rgba(171,255,2,0.25)", padding: "2px 10px", borderRadius: 2,
+                }}>
+                  MCP ENGINE
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium flex items-center gap-2">
-                <span>Mumbai Suburban Railway Network (CSMT • Kasara • Churchgate • Virar • Panvel)</span>
-                <span className="hidden sm:inline text-slate-300">•</span>
-                <span className="hidden sm:inline font-blueprint text-slate-600 text-xs font-semibold">
-                  Scale: 1:1 Live Telemetry
-                </span>
+              <p className="tp-label" style={{ color: "var(--c-gray-dim)", marginTop: 4 }}>
+                Mumbai Suburban Railway · CSMT · Kasara · Churchgate · Virar · Panvel
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Active Corridor Indicator Pill */}
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-700 shadow-2xs">
-              <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              <span>CORRIDOR: {selectedLine === "ALL" ? "MULTI-LINE" : `${selectedLine}`}</span>
+          {/* Right nav */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {/* Corridor pill */}
+            <div className="tp-pill tp-pill-white" style={{ display: "none" }} id="corridor-pill-lg">
+              <Zap style={{ width: 12, height: 12, color: "var(--c-lime)" }} />
+              <span>CORRIDOR: {selectedLine === "ALL" ? "MULTI-LINE" : selectedLine}</span>
+            </div>
+            <div className="tp-pill tp-pill-white">
+              <Zap style={{ width: 12, height: 12, color: "var(--c-lime)" }} />
+              <span>CORRIDOR: {selectedLine === "ALL" ? "MULTI" : selectedLine}</span>
             </div>
 
-            {/* Custom DB Login Trigger */}
+            {/* Network status dots */}
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {[
+                { label: "CR", color: "#ef4444", glow: "#ef4444" },
+                { label: "WR", color: "var(--c-blue)", glow: "var(--c-blue)" },
+                { label: "HR", color: "var(--c-lime)", glow: "var(--c-lime)" },
+              ].map(({ label, color, glow }) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{
+                    display: "block", width: 6, height: 6, borderRadius: "50%",
+                    background: color, boxShadow: `0 0 6px ${glow}`,
+                  }} />
+                  <span className="tp-label" style={{ color: "var(--c-gray-dim)" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Config button */}
             <button
               onClick={() => setShowConfig(!showConfig)}
-              className="flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl font-bold transition-all shadow-sm active:scale-95 border border-slate-800"
+              className="tp-btn tp-btn-dark"
+              style={{ gap: 8 }}
             >
-              <KeyRound className="w-3.5 h-3.5 text-indigo-300" />
-              <span>{showConfig ? "Close Credentials" : studentId ? `Roll: ${studentId}` : "Set Custom DB"}</span>
+              <KeyRound style={{ width: 13, height: 13 }} />
+              {showConfig ? "Close" : studentId ? `Roll: ${studentId}` : "Connect DB"}
             </button>
           </div>
         </div>
       </header>
 
-      {/* 4. Main Dashboard Workspace */}
-      <main className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* COLLEGE / INSTITUTE SELECTION & RAW DATA PROFILE SWITCHER BAR */}
-        <div className="bg-white/95 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-lg space-y-4">
-          {/* Top Row: College Selector */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-indigo-600" />
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 font-mono">
-                Select Institute / College Database:
-              </span>
-            </div>
+      {/* ── 4. Hero network stats band ── */}
+      <div className={`relative z-20 tp-anim-fade ${mounted ? "" : "opacity-0"}`}
+        style={{
+          background: "linear-gradient(180deg, rgba(4,12,12,0.0) 0%, rgba(4,12,12,0.6) 100%)",
+          padding: "32px 24px 0",
+        }}
+      >
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 1, background: "rgba(171,255,2,0.06)", border: "1px solid rgba(171,255,2,0.10)", borderRadius: 4 }}>
+            {[
+              { num: "37", label: "Active Stations", sub: "Kasara Corridor" },
+              { num: "98.2%", label: "CR Punctuality", sub: "Central Railway" },
+              { num: "99.1%", label: "WR Punctuality", sub: "Western Railway" },
+              { num: "v2.5", label: "MCP Engine", sub: "Live Telemetry" },
+            ].map(({ num, label, sub }, i) => (
+              <div
+                key={label}
+                className={`tp-anim-up tp-delay-${i + 1}`}
+                style={{
+                  padding: "20px 24px",
+                  borderRight: i < 3 ? "1px solid rgba(171,255,2,0.08)" : undefined,
+                }}
+              >
+                <div className="tp-label" style={{ color: "var(--c-gray-dim)", marginBottom: 6 }}>{sub}</div>
+                <div className="tp-stat-number" style={{ fontSize: "1.75rem" }}>{num}</div>
+                <div className="tp-label" style={{ color: "var(--c-white-80)", marginTop: 4 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-              <span>Nearest Station:</span>
-              <span className="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200 font-mono">
-                {selectedCollege.nearestStation} ({selectedCollege.defaultLine})
-              </span>
+      {/* ── 5. Main Dashboard Content ── */}
+      <main style={{ position: "relative", zIndex: 20, maxWidth: 1400, margin: "0 auto", padding: "32px 24px 64px" }}>
+
+        {/* ─ Institute & Profile Selector ─ */}
+        <div className={`tp-glass tp-crosshair tp-card-hover tp-anim-up tp-delay-2`}
+          style={{ borderRadius: 4, padding: "24px 28px", marginBottom: 24 }}
+        >
+          {/* Section header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <div className="tp-section-title">
+              <Building2 style={{ width: 14, height: 14, color: "var(--c-lime)" }} />
+              Institute Database Selection
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="tp-label" style={{ color: "var(--c-gray-dim)" }}>Nearest Station:</span>
+              <span className="tp-pill tp-pill-lime">{selectedCollege.nearestStation} · {selectedCollege.defaultLine}</span>
             </div>
           </div>
 
-          {/* College Pills Row */}
-          <div className="flex flex-wrap items-center gap-2">
-            {MUMBAI_COLLEGES.map((col) => {
-              const isSelected = col.id === selectedCollegeId;
-              return (
-                <button
-                  key={col.id}
-                  onClick={() => setSelectedCollegeId(col.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                    isSelected
-                      ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                      : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-                >
-                  <span>{col.shortCode}</span>
-                  <span className="ml-1 opacity-70 text-[10px] hidden sm:inline">({col.location.split(",")[0]})</span>
-                </button>
-              );
-            })}
+          {/* College pills */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+            {MUMBAI_COLLEGES.map((col) => (
+              <button
+                key={col.id}
+                onClick={() => setSelectedCollegeId(col.id)}
+                className={`tp-college-pill ${col.id === selectedCollegeId ? "active" : ""}`}
+              >
+                {col.shortCode}
+                <span style={{ opacity: 0.6, marginLeft: 6, fontSize: "0.625rem" }}>
+                  {col.location.split(",")[0]}
+                </span>
+              </button>
+            ))}
           </div>
 
-          {/* Bottom Row: Pre-loaded Demo Student Profiles with Raw Data */}
-          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-emerald-600" />
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 font-mono">
-                Load Student Dataset Profile:
-              </span>
-            </div>
+          {/* Divider */}
+          <div className="tp-divider" style={{ margin: "16px 0" }} />
 
-            <div className="flex flex-wrap items-center gap-2">
+          {/* Demo profiles */}
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div className="tp-section-title">
+              <UserCheck style={{ width: 14, height: 14, color: "var(--c-lime)" }} />
+              Student Dataset Profiles
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {DEMO_PROFILES.map((p) => {
                 const isActive = p.id === activeProfileId;
-                const statusColor =
-                  p.standingCategory === "borderline"
-                    ? "text-amber-700 bg-amber-50 border-amber-300"
-                    : p.standingCategory === "critical"
-                    ? "text-rose-700 bg-rose-50 border-rose-300"
-                    : "text-emerald-700 bg-emerald-50 border-emerald-300";
-
+                const accentColor =
+                  p.standingCategory === "borderline" ? "#ffa07a" :
+                  p.standingCategory === "critical"   ? "#ff6b6b" :
+                  "var(--c-lime)";
                 return (
                   <button
                     key={p.id}
                     onClick={() => loadDemoProfile(p.id)}
-                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
-                      isActive
-                        ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                        : `${statusColor} hover:brightness-95`
-                    }`}
+                    className="tp-profile-card"
+                    style={{
+                      background: isActive ? "rgba(171,255,2,0.08)" : undefined,
+                      borderColor: isActive ? "rgba(171,255,2,0.4)" : undefined,
+                    }}
                   >
-                    <span>{p.name}</span>
-                    <span className="text-[10px] font-mono opacity-80 uppercase">
-                      ({p.standingCategory})
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: accentColor, flexShrink: 0 }} />
+                      <span className="tp-label-lg" style={{ color: isActive ? "var(--c-lime)" : "var(--c-white-80)" }}>
+                        {p.name}
+                      </span>
+                      <span className="tp-label" style={{ color: accentColor, opacity: 0.9 }}>
+                        {p.standingCategory}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
@@ -259,142 +325,132 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Kasara Corridor Operational Notice */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-amber-50/90 via-white/90 to-slate-50/90 backdrop-blur-md p-4 rounded-2xl border border-amber-200 shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-amber-500 rounded-full" />
-            <div>
-              <div className="font-hand text-lg text-slate-800 font-bold leading-tight flex items-center gap-2">
-                <span>Central Railway update: Kasara corridor 37 stations topology active</span>
-                <span className="text-xs font-mono font-normal bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md">
-                  m-Indicator v2026.09
-                </span>
-              </div>
-              <p className="text-xs font-blueprint text-slate-600">
-                Train numbers 95401–95435 Fast & 96402/96406 Slow locals operating with live buffer matching
-              </p>
-            </div>
+        {/* ─ Operations Notice Banner ─ */}
+        <div className={`tp-anim-up tp-delay-3`} style={{
+          display: "flex", alignItems: "center", gap: 20, marginBottom: 28,
+          padding: "16px 24px",
+          background: "rgba(4,12,12,0.6)",
+          border: "1px solid rgba(171,255,2,0.10)",
+          borderLeft: "3px solid var(--c-lime)",
+          borderRadius: "0 4px 4px 0",
+          backdropFilter: "blur(12px)",
+        }}>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <Radio style={{ width: 16, height: 16, color: "var(--c-lime)" }} />
+            <span className="tp-label" style={{ color: "var(--c-lime)" }}>OPS-VERIFIED</span>
           </div>
-          <div className="font-mono text-[11px] text-slate-500 hidden sm:block">
-            STAMP: CR-ENG-VERIFIED // <span className="font-hand text-slate-700 font-bold text-sm">Approved ✍️</span>
+          <div className="tp-divider" style={{ width: 1, height: 32, background: "rgba(171,255,2,0.12)", flexShrink: 0 }} />
+          <div>
+            <p className="tp-body" style={{ color: "var(--c-white-80)", fontSize: "0.875rem" }}>
+              Central Railway · Kasara Corridor · 37 Stations Topology Active
+              <span className="tp-pill tp-pill-lime" style={{ marginLeft: 12, verticalAlign: "middle" }}>
+                m-Indicator v2026.09
+              </span>
+            </p>
+            <p className="tp-label" style={{ color: "var(--c-gray-dim)", marginTop: 4 }}>
+              Train numbers 95401–95435 Fast · 96402/96406 Slow locals · Live buffer matching active
+            </p>
+          </div>
+          <div style={{ marginLeft: "auto", flexShrink: 0 }}>
+            <span className="tp-label-lg" style={{ color: "var(--c-gray-dim)" }}>
+              CR-ENG-VERIFIED
+            </span>
           </div>
         </div>
 
-        {/* Expandable Custom Portal Configuration Form */}
+        {/* ─ Custom DB Credentials Form ─ */}
         {showConfig && (
-          <form
-            onSubmit={handleSave}
-            className="bg-white/95 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 shadow-xl transition-all relative overflow-hidden"
+          <div className={`tp-glass tp-crosshair tp-anim-up`}
+            style={{ borderRadius: 4, padding: "28px", marginBottom: 28, position: "relative", overflow: "hidden" }}
           >
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500" />
+            {/* Top accent line */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 2,
+              background: "linear-gradient(90deg, var(--c-lime), rgba(171,255,2,0.3), transparent)",
+            }} />
 
-            <div className="flex items-center justify-between mb-4">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-indigo-600" />
-                  Connect Custom College ERP Credentials
-                </h3>
-                <p className="text-xs text-slate-500 font-medium">
-                  Connect your live Mumbai University ERP credentials for automated attendance sync
+                <div className="tp-section-title" style={{ marginBottom: 8 }}>
+                  <GraduationCap style={{ width: 14, height: 14, color: "var(--c-lime)" }} />
+                  Connect College ERP Database
+                </div>
+                <p className="tp-body" style={{ color: "var(--c-gray-dim)", fontSize: "0.8125rem" }}>
+                  Connect your Mumbai University ERP credentials for live attendance sync
                 </p>
               </div>
-              <div className="font-hand text-sm text-slate-500 hidden md:block">
-                &ldquo;AES-256 encrypted zero-trust local storage&rdquo;
-              </div>
+              <span className="tp-pill tp-pill-lime">AES-256 Encrypted</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span>Student ID / Roll No</span>
-                  <span className="font-hand text-xs text-slate-400">e.g. 241635</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={tempId}
-                  onChange={(e) => setTempId(e.target.value)}
-                  placeholder="241635"
-                  className="w-full mt-1.5 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-2xs"
-                />
+            <form onSubmit={handleSave}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+                {[
+                  { label: "Student ID / Roll No", placeholder: "241635", type: "text", val: tempId, set: setTempId },
+                  { label: "Portal Username", placeholder: "ERP Login", type: "text", val: tempUser, set: setTempUser },
+                  { label: "Password", placeholder: "••••••••", type: "password", val: tempPass, set: setTempPass as any },
+                ].map(({ label, placeholder, type, val, set }) => (
+                  <div key={label}>
+                    <label className="tp-label" style={{ color: "var(--c-gray-dim)", display: "block", marginBottom: 8 }}>
+                      {label}
+                    </label>
+                    <input
+                      type={type}
+                      required
+                      value={val}
+                      onChange={(e) => (set as any)(e.target.value)}
+                      placeholder={placeholder}
+                      className="tp-input"
+                    />
+                  </div>
+                ))}
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span>Portal Username</span>
-                  <span className="font-hand text-xs text-slate-400">ERP Login</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={tempUser}
-                  onChange={(e) => setTempUser(e.target.value)}
-                  placeholder="student username"
-                  className="w-full mt-1.5 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-2xs"
-                />
-              </div>
+              <div className="tp-divider" style={{ marginBottom: 20 }} />
 
-              <div>
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span>Password</span>
-                  <span className="font-hand text-xs text-slate-400">Secret key</span>
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={tempPass}
-                  onChange={(e) => setTempPass(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full mt-1.5 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-2xs"
-                />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--c-lime)" }} />
+                  <span className="tp-label" style={{ color: "var(--c-gray-dim)" }}>
+                    ACTIVE ADAPTER: {selectedCollege.name} ({selectedCollege.campusCode})
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button type="button" onClick={() => setShowConfig(false)} className="tp-btn tp-btn-ghost">
+                    Cancel
+                  </button>
+                  <button type="submit" className="tp-btn tp-btn-primary">
+                    <CheckCircle2 style={{ width: 14, height: 14 }} />
+                    Save & Sync Live DB
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap justify-between items-center gap-3">
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                <span>ACTIVE ADAPTER: {selectedCollege.name} ({selectedCollege.campusCode})</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowConfig(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md shadow-indigo-200 transition-all active:scale-95 flex items-center gap-1.5"
-                >
-                  <CheckCircle2 className="w-4 h-4" /> Save Credentials & Sync Live DB
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
 
-        {/* 5. Core Dashboard Grid: Train Tracker & Academic Standings */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+        {/* ─ Core Dashboard Grid ─ */}
+        <div className={`tp-anim-up tp-delay-4`} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 24 }}>
           <TrainTrackerCard />
           <AttendanceCard />
         </div>
 
-        {/* 6. Engineering Footer with Blueprint Notation & Hand-signed Seal */}
-        <footer className="pt-8 pb-12 text-center text-slate-400 border-t border-slate-300/40">
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-mono mb-2">
-            <span>MUMBAI SUBURBAN NETWORK • CR / WR / HR</span>
-            <span>•</span>
-            <span>KASARA SECTION: 37 STATIONS VERIFIED</span>
-            <span>•</span>
-            <span className="font-hand text-slate-600 font-bold text-sm">
-              Design & Topology Handcrafted for Daily Commuters 🚆
-            </span>
+        {/* ─ Footer ─ */}
+        <footer style={{ marginTop: 64, paddingTop: 32, borderTop: "1px solid rgba(171,255,2,0.10)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <img src="/logo.jpg" alt="TransitPulse" style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(171,255,2,0.2)" }} />
+              <span className="tp-label-lg" style={{ color: "var(--c-white-80)" }}>
+                Transit<span style={{ color: "var(--c-lime)" }}>Pulse</span>
+              </span>
+              <div className="tp-divider" style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
+              <span className="tp-label" style={{ color: "var(--c-gray-dim)" }}>Autonomous Commute & Campus MCP Engine · v2.5</span>
+            </div>
+            <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+              {["CR / WR / HR", "37 STATIONS", "KASARA VERIFIED"].map((t) => (
+                <span key={t} className="tp-label" style={{ color: "var(--c-gray-dim)" }}>{t}</span>
+              ))}
+            </div>
           </div>
-          <p className="text-[11px] text-slate-400 font-blueprint">
-            Autonomous Commute & Campus Model Context Protocol Engine • v2.5
-          </p>
         </footer>
       </main>
     </div>
