@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import type { SuburbanLineCode } from "../types";
 
 interface AuthState {
   studentId: string;
@@ -7,10 +8,14 @@ interface AuthState {
   password: string;
   fromStation: string;
   toStation: string;
+  selectedLine: SuburbanLineCode;
+  trainTypeFilter: string;
   setStudentId: (id: string) => void;
   setCredentials: (username: string, password: string) => void;
   setRoute: (from: string, to: string) => void;
   swapRoute: () => void;
+  setSelectedLine: (line: SuburbanLineCode) => void;
+  setTrainTypeFilter: (filter: string) => void;
   clearAuth: () => void;
 }
 
@@ -20,8 +25,10 @@ export const useAuthStore = create<AuthState>()(
       studentId: "",
       username: "",
       password: "",
-      fromStation: "Thane",
-      toStation: "Byculla",
+      fromStation: "CSMT",
+      toStation: "Thane",
+      selectedLine: "ALL",
+      trainTypeFilter: "ALL",
       setStudentId: (id) => set({ studentId: id }),
       setCredentials: (username, password) => set({ username, password }),
       setRoute: (from, to) => set({ fromStation: from, toStation: to }),
@@ -29,6 +36,8 @@ export const useAuthStore = create<AuthState>()(
         const { fromStation, toStation } = get();
         set({ fromStation: toStation, toStation: fromStation });
       },
+      setSelectedLine: (line) => set({ selectedLine: line }),
+      setTrainTypeFilter: (filter) => set({ trainTypeFilter: filter }),
       clearAuth: () => set({ studentId: "", username: "", password: "" }),
     }),
     {
@@ -37,11 +46,12 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         studentId: state.studentId,
         username: state.username,
-        // Omit cleartext password from long-term localStorage if desired,
-        // or encrypt/retain in session memory
         fromStation: state.fromStation,
         toStation: state.toStation,
+        selectedLine: state.selectedLine,
+        trainTypeFilter: state.trainTypeFilter,
       }),
     }
   )
 );
+

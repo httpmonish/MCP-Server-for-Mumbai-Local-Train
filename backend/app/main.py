@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -26,8 +29,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
 # Database Setup
-# Using a mock URL for this implementation, would be in settings in production
-DATABASE_URL = "postgresql+asyncpg://user:pass@localhost/dbname"
+DATABASE_URL = settings.DATABASE_URL
 engine = create_async_engine(DATABASE_URL)
 async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -50,6 +52,12 @@ app.include_router(trains.router)
 app.include_router(metrics.router)
 app.include_router(delays.router)
 
+# Mount frontend build if present
+dist_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend-v2", "dist")
+if os.path.exists(dist_path):
+    app.mount("/", StaticFiles(directory=dist_path, html=True), name="frontend")
+
 @app.on_event("shutdown")
 async def shutdown_event():
     await cache.close()
+

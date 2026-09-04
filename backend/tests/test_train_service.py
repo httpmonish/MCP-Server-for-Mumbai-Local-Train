@@ -111,3 +111,36 @@ async def test_train_caching_hit():
     assert result["source"] == "cache"
     assert result["data"] == cached_data
     mock_db.execute.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_kasara_mindicator_timetable_retrieval():
+    mock_db = AsyncMock()
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.all.return_value = []
+    mock_db.execute.return_value = mock_result
+
+    mock_cache = AsyncMock()
+    mock_cache.get.return_value = None
+
+    # Query from Kasara to CSMT in the morning (e.g. 06:00:00)
+    query_time = time(6, 0)
+    result = await train_service.get_next_trains(mock_db, mock_cache, "Kasara", "Mumbai CSMT", query_time, limit=5)
+
+    assert result["line"] == "CR"
+    assert len(result["data"]) > 0
+    # First train after 06:00 is 95404 departing at 06:10:00
+    first_train = result["data"][0]
+    assert first_train["train_number"] in ["95404", "95406", "95408"]
+    assert first_train["departure_from_source"] >= "06:00:00"
+
+
+@pytest.mark.asyncio
+async def test_kasara_stations_topology_extended():
+    stations = train_service.get_stations_info("CR")
+    station_names = [s["name"] for s in stations]
+    assert "Kasara" in station_names
+    assert "Titwala" in station_names
+    assert "Asangaon" in station_names
+    assert len(stations) == 37
+

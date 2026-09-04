@@ -49,7 +49,15 @@ const elements = {
   trainCountdown: document.getElementById('train-countdown'),
 };
 
-const STATIONS = ["CSMT", "Byculla", "Dadar", "Kurla", "Ghatkopar", "Thane", "Diva", "Dombivli", "Kalyan", "Andheri", "Borivali"];
+const STATIONS = [
+  // Central Line (CR)
+  "CSMT", "Byculla", "Dadar", "Kurla", "Ghatkopar", "Thane", "Dombivli", "Kalyan", "Titwala", "Asangaon", "Kasara",
+  // Western Line (WR)
+  "Churchgate", "Mumbai Central", "Bandra", "Andheri", "Goregaon", "Borivali", "Bhayandar", "Virar",
+  // Harbour Line (HR)
+  "Sandhurst Road", "Vadala Road", "Vashi", "Nerul", "Belapur", "Kharghar", "Panvel"
+];
+
 
 async function init() {
   // 1. Restore storage
@@ -252,21 +260,24 @@ function renderTrains(trains) {
 
     const typeColor = t.train_type === 'FAST' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
 
+    const lineBg = t.line === 'WR' ? 'bg-blue-600 text-white' : (t.line === 'HR' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white');
+
     elements.trainsList.innerHTML += `
       <div class="p-3 bg-slate-50 border border-slate-100 rounded-lg flex justify-between items-center hover:bg-white transition-all shadow-sm">
         <div class="flex flex-col">
-          <span class="text-xs font-bold text-slate-400">${t.train_number}</span>
+          <span class="text-xs font-bold text-slate-500">#${t.train_number}</span>
           <div class="flex gap-1 mt-1">
-            <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${t.line}</span>
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded ${lineBg}">${t.line}</span>
             <span class="text-[10px] font-black px-1.5 py-0.5 rounded ${typeColor}">${t.train_type}</span>
           </div>
         </div>
         <div class="text-right">
-          <div class="text-sm font-bold text-slate-800">${t.departure_from_source} $\to$ ${t.arrival_at_destination}</div>
+          <div class="text-sm font-bold text-slate-800">${t.departure_from_source} → ${t.arrival_at_destination}</div>
           <div class="text-[10px] font-medium text-indigo-600 uppercase tracking-tighter">${countdownText} • ${t.travel_time_minutes}m</div>
         </div>
       </div>
     `;
+
   });
 }
 
