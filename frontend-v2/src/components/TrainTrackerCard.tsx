@@ -143,21 +143,26 @@ export const TrainTrackerCard: React.FC = () => {
   const currentTheme = LINE_THEMES[selectedLine] || LINE_THEMES.ALL;
 
   return (
-    <div className={`relative overflow-hidden bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/80 p-6 flex flex-col justify-between transition-all duration-300`}>
+    <div className={`relative overflow-hidden bg-white/95 backdrop-blur-xl rounded-3xl shadow-xl border border-slate-200/90 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300`}>
       {/* Subtle top ambient glow based on active line */}
       <div className={`absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gradient-to-br ${currentTheme.bgGlow} blur-3xl pointer-events-none`} />
+
+      {/* Blueprint reference watermark */}
+      <div className="absolute top-3 right-4 font-mono text-[9px] text-slate-300 select-none hidden sm:block">
+        [TRANSIT_RADAR // CR_WR_HR_SYNC]
+      </div>
 
       <div>
         {/* Card Header & Auto-sync badge */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-900 to-indigo-700 flex items-center justify-center text-white shadow-md">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-700 flex items-center justify-center text-white shadow-md">
               <Train className="w-5 h-5 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-black text-slate-900 tracking-tight">Mumbai Local Live</h2>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                   Live Sync
                 </span>
@@ -168,7 +173,7 @@ export const TrainTrackerCard: React.FC = () => {
 
           {/* Sync status & Refresh button */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold bg-slate-100/90 px-3 py-1.5 rounded-xl border border-slate-200">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
               <span>{secondsUntilSync}s</span>
             </div>
@@ -176,7 +181,7 @@ export const TrainTrackerCard: React.FC = () => {
               onClick={() => refetch()}
               disabled={isFetching}
               title="Refresh Timetable"
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all border border-slate-200 disabled:opacity-50"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all border border-slate-200 disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin text-indigo-600" : ""}`} />
             </button>
@@ -184,7 +189,7 @@ export const TrainTrackerCard: React.FC = () => {
         </div>
 
         {/* Corridor Line Switcher Tabs */}
-        <div className="mb-5">
+        <div className="mb-4">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
             <Navigation className="w-3 h-3 text-indigo-500" /> Select Suburban Corridor
           </div>
@@ -240,6 +245,12 @@ export const TrainTrackerCard: React.FC = () => {
               Harbour (HR)
             </button>
           </div>
+        </div>
+
+        {/* Handwritten Corridor note */}
+        <div className="mb-4 font-hand text-sm text-slate-600 font-bold flex items-center justify-between px-1">
+          <span>Central Line: CSMT to Kasara (37 Stations) • Today's m-Indicator Verified ✍️</span>
+          <span className="font-mono text-[10px] text-slate-400 font-normal">Headway ~4m</span>
         </div>
 
         {/* Station Selectors with Direction Swap */}
