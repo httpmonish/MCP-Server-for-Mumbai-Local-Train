@@ -1,0 +1,3 @@
+[submodule "frontend-v2/src/MP-INTEL/MPINTEL"]
+	path = frontend-v2/src/MP-INTEL/MPINTEL
+	url = https://github.com/httpmonish/MPINTEL.git
