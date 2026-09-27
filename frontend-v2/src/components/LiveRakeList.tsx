@@ -1,10 +1,33 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { TrainRakeTelemetry } from '../lib/services/telemetryService';
 
-export const LiveRakeList: React.FC = () => {
+interface LiveRakeListProps {
+  rakes: TrainRakeTelemetry[];
+  selectedRakeId: string;
+  onSelectRake: (rakeId: string) => void;
+  isLoading?: boolean;
+}
+
+export const LiveRakeList: React.FC<LiveRakeListProps> = ({
+  rakes,
+  selectedRakeId,
+  onSelectRake,
+  isLoading = false,
+}) => {
   const [expandedRake, setExpandedRake] = useState<string | null>('95401');
+  const [hoveredCoach, setHoveredCoach] = useState<string | null>(null);
+  const [verifiedPassId, setVerifiedPassId] = useState<string | null>(null);
 
-  const toggleDrawer = (id: string) => {
+  const toggleDrawer = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setExpandedRake(expandedRake === id ? null : id);
+  };
+
+  const handleVerifyPass = (rakeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setVerifiedPassId(rakeId);
+    setTimeout(() => setVerifiedPassId(null), 5000);
   };
 
   return (
@@ -24,278 +47,271 @@ export const LiveRakeList: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 rounded-full bg-white/[0.04] border border-glass-border font-mono text-[11px] text-text-secondary">
-            3 Rakes in 28m Window
+            {rakes.length} Rakes in 28m Window
           </span>
         </div>
       </div>
 
-      {/* Train Card 1: Train #95401 FAST (12-Car Rake) [FEATURED] */}
-      <article className="w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-glass-border p-4 sm:p-6 transition-all duration-300 hover:bg-white/[0.05] hover:border-glass-border-hover shadow-xl flex flex-col gap-4 group">
-        {/* Top Telemetry Row */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary font-mono text-[11px] uppercase flex items-center gap-1.5 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-              On Schedule
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-white/[0.04] text-text-secondary font-mono text-[11px]">
-              #95401 FAST
-            </span>
-            <span className="hidden sm:inline font-mono text-[11px] text-text-muted">
-              • 12-Car ICF Siemens Rake
-            </span>
-          </div>
-          <div className="flex items-center gap-3 font-mono text-[11px] text-text-secondary">
-            <span className="flex items-center gap-1 text-primary">
-              <span className="material-symbols-outlined text-[16px]">speed</span>
-              92 km/h
-            </span>
-            <span className="text-text-muted">•</span>
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.04]">Plat 5 (TNA)</span>
-          </div>
-        </div>
-
-        {/* Times & Destinations */}
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 py-1">
-          <div className="flex items-baseline gap-3">
-            <span className="font-headline text-3xl text-text-primary tracking-tight font-normal">
-              08:47 AM
-            </span>
-            <span className="font-body text-sm text-text-muted font-light">Thane Dep</span>
-            <span className="material-symbols-outlined text-text-muted text-[18px] translate-y-0.5">
-              trending_flat
-            </span>
-            <span className="font-headline text-3xl text-primary tracking-tight font-normal">
-              09:23 AM
-            </span>
-            <span className="font-body text-sm text-text-muted font-light">Dadar Arr</span>
-          </div>
-          <div className="flex flex-col sm:items-end">
-            <span className="font-mono text-lg text-text-primary font-medium tracking-tight">
-              36 mins
-            </span>
-            <span className="font-body text-xs text-text-muted">
-              7 Stops (Non-stop GC → CLA)
-            </span>
-          </div>
-        </div>
-
-        {/* Occupancy & VJTI Target Delta */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
-            <span className="font-body text-xs text-text-muted">Total Load</span>
-            <span className="font-mono text-xs text-primary font-medium">78% (Moderate Density)</span>
-          </div>
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
-            <span className="font-body text-xs text-text-muted">VJTI Walk</span>
-            <span className="font-mono text-xs text-text-primary font-medium">6 mins from Matunga E.</span>
-          </div>
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
-            <span className="font-body text-xs text-text-muted">Arrival Buffer</span>
-            <span className="font-mono text-xs text-primary font-medium">+12m Before Lecture</span>
-          </div>
-        </div>
-
-        {/* Interactive Carriage Density Forecaster Accordion */}
-        <div className="w-full pt-1">
-          <button
-            onClick={() => toggleDrawer('95401')}
-            className="w-full py-2 px-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-glass-border transition-colors flex items-center justify-between font-body text-xs text-text-secondary group-hover:text-text-primary cursor-pointer"
-          >
-            <span className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px] text-primary">view_column</span>
-              <span>Carriage-by-Carriage Real-time Crowding Matrix (12 Cars)</span>
-            </span>
-            <div className="flex items-center gap-1 font-mono text-xs text-text-muted">
-              <span>{expandedRake === '95401' ? 'Collapse' : 'View Carriage Map'}</span>
-              <span
-                className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${
-                  expandedRake === '95401' ? 'rotate-180' : ''
-                }`}
-              >
-                expand_more
-              </span>
+      {/* Loading Skeleton */}
+      {isLoading ? (
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="w-full h-48 rounded-3xl bg-white/[0.02] border border-glass-border animate-pulse p-6 flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-32 h-6 bg-white/[0.06] rounded-full"></div>
+                <div className="w-24 h-6 bg-white/[0.06] rounded-full"></div>
+              </div>
+              <div className="w-64 h-10 bg-white/[0.06] rounded-xl"></div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="h-8 bg-white/[0.04] rounded-xl"></div>
+                <div className="h-8 bg-white/[0.04] rounded-xl"></div>
+                <div className="h-8 bg-white/[0.04] rounded-xl"></div>
+              </div>
             </div>
-          </button>
+          ))}
+        </div>
+      ) : (
+        /* Rakes List */
+        rakes.map((rake) => {
+          const isSelected = selectedRakeId === rake.id;
+          const isDelayed = rake.status === 'DELAYED';
+          const isAC = rake.trainType === 'AC_FAST';
 
-          {/* Expandable Drawer Compartment */}
-          {expandedRake === '95401' && (
-            <div className="flex flex-col gap-3 pt-4 px-2">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {/* Coach 1-3 */}
-                <div className="p-3 rounded-xl bg-surface-container-high/60 border border-glass-border flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] text-text-primary">C1-C3 Gen II</span>
-                    <span className="font-mono text-[10px] text-secondary">86%</span>
-                  </div>
-                  <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-secondary h-full rounded-full" style={{ width: '86%' }}></div>
-                  </div>
-                  <span className="font-mono text-[10px] text-text-muted">Boarding doors 2 & 3 busy</span>
+          return (
+            <motion.article
+              key={rake.id}
+              layout
+              onClick={() => onSelectRake(rake.id)}
+              whileHover={{ y: -2 }}
+              className={`w-full rounded-3xl backdrop-blur-2xl p-4 sm:p-6 transition-all duration-300 shadow-xl flex flex-col gap-4 cursor-pointer relative overflow-hidden ${
+                isSelected
+                  ? 'bg-white/[0.06] border-2 border-primary/50 shadow-[0_0_30px_rgba(78,222,163,0.15)]'
+                  : 'bg-white/[0.03] border border-glass-border hover:bg-white/[0.05] hover:border-glass-border-hover'
+              }`}
+            >
+              {/* Selected Glow Indicator */}
+              {isSelected && (
+                <div className="absolute top-0 right-0 w-2 h-full bg-primary shadow-[0_0_12px_#4edea3]"></div>
+              )}
+
+              {/* Top Telemetry Row */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2.5 py-1 rounded-full font-mono text-[11px] uppercase flex items-center gap-1.5 font-semibold ${
+                      isDelayed
+                        ? 'bg-secondary/20 text-secondary'
+                        : 'bg-primary/10 text-primary'
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isDelayed ? 'bg-secondary animate-pulse' : 'bg-primary animate-ping'
+                      }`}
+                    ></span>
+                    {isDelayed ? `Delayed +${rake.delayMinutes}m` : 'On Schedule'}
+                  </span>
+
+                  <span className="px-2.5 py-1 rounded-full bg-white/[0.04] text-text-secondary font-mono text-[11px]">
+                    {rake.trainNumber}
+                  </span>
+
+                  <span className="hidden sm:inline font-mono text-[11px] text-text-muted">
+                    • {isAC ? 'Medha Plug-Door AC Rake' : '12-Car ICF Siemens Rake'}
+                  </span>
+
+                  {isSelected && (
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">
+                      ACTIVE TRACKED
+                    </span>
+                  )}
                 </div>
 
-                {/* Coach 4 */}
-                <div className="p-3 rounded-xl bg-surface-container-high/60 border border-glass-border flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] text-text-primary">C4 First Class</span>
-                    <span className="font-mono text-[10px] text-primary">54%</span>
-                  </div>
-                  <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full" style={{ width: '54%' }}></div>
-                  </div>
-                  <span className="font-mono text-[10px] text-text-muted">Comfort seats available</span>
-                </div>
-
-                {/* Coach 5 */}
-                <div className="p-3 rounded-xl bg-surface-container-high/60 border border-glass-border flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] text-text-primary">C5 Ladies Compartment</span>
-                    <span className="font-mono text-[10px] text-primary">62%</span>
-                  </div>
-                  <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full" style={{ width: '62%' }}></div>
-                  </div>
-                  <span className="font-mono text-[10px] text-text-muted">Smooth transit flow</span>
-                </div>
-
-                {/* Coach 6-12 */}
-                <div className="p-3 rounded-xl bg-surface-container-high/60 border border-glass-border flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] text-text-primary">C6 Divyang / Vendor</span>
-                    <span className="font-mono text-[10px] text-primary">40%</span>
-                  </div>
-                  <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full" style={{ width: '40%' }}></div>
-                  </div>
-                  <span className="font-mono text-[10px] text-text-muted">Unimpeded ingress</span>
+                <div className="flex items-center gap-3 font-mono text-[11px] text-text-secondary">
+                  <span className="flex items-center gap-1 text-primary">
+                    <span className="material-symbols-outlined text-[16px]">speed</span>
+                    {rake.currentSpeedKm} km/h
+                  </span>
+                  <span className="text-text-muted">•</span>
+                  <span className="px-2 py-0.5 rounded-full bg-white/[0.04]">{rake.platform}</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between font-mono text-[11px] text-text-muted pt-1">
-                <span>Teleport Predictive Flow Sensor V3.2 • Calibrated 08:35 AM</span>
-                <span className="text-primary cursor-pointer hover:underline">
-                  Select Best Coach Location →
-                </span>
+              {/* Times & Destinations */}
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 py-1">
+                <div className="flex items-baseline gap-3">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="font-headline text-3xl text-text-primary tracking-tight font-normal">
+                      {rake.departureTime}
+                    </span>
+                    {isDelayed && (
+                      <span className="font-mono text-xs text-secondary line-through">09:02</span>
+                    )}
+                  </div>
+                  <span className="font-body text-sm text-text-muted font-light">{rake.originCode} Dep</span>
+                  <span className="material-symbols-outlined text-text-muted text-[18px] translate-y-0.5">
+                    trending_flat
+                  </span>
+                  <span
+                    className={`font-headline text-3xl tracking-tight font-normal ${
+                      isDelayed ? 'text-text-secondary' : 'text-primary'
+                    }`}
+                  >
+                    {rake.arrivalTime}
+                  </span>
+                  <span className="font-body text-sm text-text-muted font-light">{rake.destinationCode} Arr</span>
+                </div>
+
+                <div className="flex flex-col sm:items-end">
+                  <span className="font-mono text-lg text-text-primary font-medium tracking-tight">
+                    {rake.durationMins} mins
+                  </span>
+                  <span className="font-body text-xs text-text-muted">
+                    {rake.stopsCount} Stops ({rake.viaDescription})
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </article>
 
-      {/* Train Card 2: Train #95201 SLOW (12-Car Rake) [DELAYED] */}
-      <article className="w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-glass-border p-4 sm:p-6 transition-all duration-300 hover:bg-white/[0.05] shadow-xl flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-secondary/20 text-secondary font-mono text-[11px] uppercase flex items-center gap-1.5 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-              Delayed +6m
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-white/[0.04] text-text-secondary font-mono text-[11px]">
-              #95201 SLOW
-            </span>
-            <span className="hidden sm:inline font-mono text-[11px] text-text-muted">
-              • 12-Car Local All-Stops
-            </span>
-          </div>
-          <div className="flex items-center gap-2 font-mono text-[11px] text-secondary">
-            <span className="material-symbols-outlined text-[16px]">info</span>
-            <span>Signaling hold-up at Kurla Platform 1</span>
-          </div>
-        </div>
+              {/* Occupancy & VJTI Target Delta */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
+                  <span className="font-body text-xs text-text-muted">Total Load</span>
+                  <span
+                    className={`font-mono text-xs font-medium ${
+                      rake.totalLoadPercent > 85 ? 'text-secondary' : 'text-primary'
+                    }`}
+                  >
+                    {rake.totalLoadPercent}% ({rake.totalLoadPercent > 85 ? 'Heavy Load' : 'Moderate Density'})
+                  </span>
+                </div>
+                <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
+                  <span className="font-body text-xs text-text-muted">VJTI Walk</span>
+                  <span className="font-mono text-xs text-text-primary font-medium">6 mins from Matunga E.</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
+                  <span className="font-body text-xs text-text-muted">Attendance Delta</span>
+                  <span
+                    className={`font-mono text-xs font-semibold ${
+                      rake.targetDeltaMins > 0 ? 'text-primary' : 'text-secondary'
+                    }`}
+                  >
+                    {rake.arrivalBufferText}
+                  </span>
+                </div>
+              </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 py-1">
-          <div className="flex items-baseline gap-3">
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-headline text-3xl text-text-primary tracking-tight font-normal">
-                09:08 AM
-              </span>
-              <span className="font-mono text-xs text-secondary line-through">09:02</span>
-            </div>
-            <span className="font-body text-sm text-text-muted font-light">Thane Dep</span>
-            <span className="material-symbols-outlined text-text-muted text-[18px] translate-y-0.5">
-              trending_flat
-            </span>
-            <span className="font-headline text-3xl text-text-secondary tracking-tight font-normal">
-              10:07 AM
-            </span>
-            <span className="font-body text-sm text-text-muted font-light">Dadar Arr</span>
-          </div>
-          <div className="flex flex-col sm:items-end">
-            <span className="font-mono text-lg text-secondary font-medium tracking-tight">
-              59 mins
-            </span>
-            <span className="font-body text-xs text-text-muted">
-              14 Stops (Heavy Mulund/Bhandup Dwell)
-            </span>
-          </div>
-        </div>
+              {/* UTS Pass Verification Status Banner */}
+              {verifiedPassId === rake.id && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-between font-mono text-xs text-primary"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">verified</span>
+                    <span>UTS Mobile QR Pass Active: Season Ticket #CR-98401 • Valid till 14 Oct 2026</span>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-primary text-black">
+                    Verified
+                  </span>
+                </motion.div>
+              )}
 
-        <div className="p-3 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-secondary text-[18px]">warning</span>
-            <span className="font-body text-xs text-secondary">
-              Risk for 09:30 Academic Slot: ETA Dadar arrives after 10:00 AM. Avoid this corridor.
-            </span>
-          </div>
-          <span className="font-mono text-[10px] text-secondary font-medium uppercase tracking-wider">
-            Unrecommended
-          </span>
-        </div>
-      </article>
+              {/* Carriage-by-Carriage Real-time Crowding Matrix Accordion */}
+              <div className="w-full pt-1">
+                <button
+                  onClick={(e) => toggleDrawer(rake.id, e)}
+                  className="w-full py-2 px-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-glass-border transition-colors flex items-center justify-between font-body text-xs text-text-secondary group-hover:text-text-primary cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-primary">view_column</span>
+                    <span>Carriage-by-Carriage Real-time Crowding Matrix (12 Coaches)</span>
+                  </span>
+                  <div className="flex items-center gap-1 font-mono text-xs text-text-muted">
+                    <span>{expandedRake === rake.id ? 'Collapse' : 'View Carriages Row ˅'}</span>
+                    <span
+                      className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${
+                        expandedRake === rake.id ? 'rotate-180' : ''
+                      }`}
+                    >
+                      expand_more
+                    </span>
+                  </div>
+                </button>
 
-      {/* Train Card 3: Train #95403 AC FAST [PREMIUM] */}
-      <article className="w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-glass-border p-4 sm:p-6 transition-all duration-300 hover:bg-white/[0.05] shadow-xl flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-primary/20 text-primary font-mono text-[11px] uppercase flex items-center gap-1.5 font-semibold">
-              <span className="material-symbols-outlined text-[14px]">ac_unit</span>
-              Air-Conditioned EMU
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-white/[0.04] text-text-secondary font-mono text-[11px]">
-              #95403 AC FAST
-            </span>
-            <span className="hidden sm:inline font-mono text-[11px] text-text-muted">
-              • Medha Automatic Doors
-            </span>
-          </div>
-          <div className="flex items-center gap-3 font-mono text-[11px] text-primary">
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.04] text-text-primary">
-              Cabin 21.0°C
-            </span>
-            <span className="text-text-muted">•</span>
-            <span>UTS QR Valid</span>
-          </div>
-        </div>
+                {/* Expandable 12-Coach Matrix */}
+                <AnimatePresence>
+                  {expandedRake === rake.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex flex-col gap-3 pt-4 px-2 overflow-hidden"
+                    >
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                        {rake.coachMatrix.map((coach) => (
+                          <div
+                            key={coach.coachNumber}
+                            onMouseEnter={() => setHoveredCoach(`${rake.id}-${coach.coachNumber}`)}
+                            onMouseLeave={() => setHoveredCoach(null)}
+                            className="p-2.5 rounded-xl bg-surface-container-high/70 border border-glass-border hover:border-primary/50 transition-all flex flex-col gap-1.5 relative group/coach"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-[11px] text-text-primary font-medium">
+                                C{coach.coachNumber} {coach.coachType === 'FIRST_CLASS' ? 'FC' : coach.coachType === 'LADIES' ? 'LD' : coach.coachType === 'AC' ? 'AC' : 'GEN'}
+                              </span>
+                              <span
+                                className={`font-mono text-[10px] font-bold ${
+                                  coach.crowdPercent > 80 ? 'text-secondary' : 'text-primary'
+                                }`}
+                              >
+                                {coach.crowdPercent}%
+                              </span>
+                            </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 py-1">
-          <div className="flex items-baseline gap-3">
-            <span className="font-headline text-3xl text-text-primary tracking-tight font-normal">
-              09:15 AM
-            </span>
-            <span className="font-body text-sm text-text-muted font-light">Thane Dep</span>
-            <span className="material-symbols-outlined text-text-muted text-[18px] translate-y-0.5">
-              trending_flat
-            </span>
-            <span className="font-headline text-3xl text-primary tracking-tight font-normal">
-              09:51 AM
-            </span>
-            <span className="font-body text-sm text-text-muted font-light">Dadar Arr</span>
-          </div>
-          <div className="flex flex-col sm:items-end">
-            <span className="font-mono text-lg text-text-primary font-medium tracking-tight">
-              36 mins
-            </span>
-            <span className="font-body text-xs text-text-muted">High Comfort Corridor</span>
-          </div>
-        </div>
+                            <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${
+                                  coach.crowdPercent > 80 ? 'bg-secondary' : 'bg-primary'
+                                }`}
+                                style={{ width: `${coach.crowdPercent}%` }}
+                              ></div>
+                            </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1 font-body text-xs text-text-secondary">
-          <span>Automated plug-doors initiate close 20 seconds prior to whistle.</span>
-          <button className="px-4 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-text-primary transition-all font-mono text-[11px] cursor-pointer">
-            Verify Pass Validity →
-          </button>
-        </div>
-      </article>
+                            <span className="font-mono text-[9px] text-text-muted truncate">
+                              {coach.description}
+                            </span>
+
+                            {/* Coach Hover Tooltip */}
+                            {hoveredCoach === `${rake.id}-${coach.coachNumber}` && (
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 p-2 rounded-xl bg-surface-obsidian border border-glass-border shadow-2xl text-[10px] font-mono text-text-primary whitespace-nowrap pointer-events-none">
+                                <span className="text-primary font-bold">Coach #{coach.coachNumber}:</span> {coach.fobAlignmentText}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row items-center justify-between font-mono text-[11px] text-text-muted pt-1 gap-2">
+                        <span>Predictive Flow Telemetry V3.2 • Hover coach to inspect platform staircase alignment</span>
+                        <button
+                          onClick={(e) => handleVerifyPass(rake.id, e)}
+                          className="text-primary hover:underline cursor-pointer flex items-center gap-1 font-semibold"
+                        >
+                          Verify Pass Validity →
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.article>
+          );
+        })
+      )}
     </section>
   );
 };
