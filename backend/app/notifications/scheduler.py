@@ -1,9 +1,8 @@
 from datetime import date, datetime, time, timedelta, timezone
-from typing import List, Optional
-from uuid import UUID
+from typing import Optional
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import and_, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -11,9 +10,7 @@ from ..core.logger import get_logger
 from ..models.notification import NotificationType
 from ..models.schedule import (
     ExceptionType,
-    Location,
     Schedule,
-    ScheduleException,
     ScheduleSlot,
     UserScheduleAssignment,
 )
@@ -63,7 +60,7 @@ class ReminderSchedulerService:
                 selectinload(UserScheduleAssignment.schedule).selectinload(Schedule.exceptions),
             )
             .where(
-                UserScheduleAssignment.is_active == True,
+                UserScheduleAssignment.is_active.is_(True),
                 UserScheduleAssignment.valid_from <= today_date,
                 or_(
                     UserScheduleAssignment.valid_until.is_(None),

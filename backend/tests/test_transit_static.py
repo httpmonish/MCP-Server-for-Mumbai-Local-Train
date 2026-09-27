@@ -8,7 +8,7 @@ async def test_get_lines(client: AsyncClient):
     assert res.status_code == 200
     lines = res.json()["lines"]
     assert len(lines) >= 3
-    line_codes = [l["code"] for l in lines]
+    line_codes = [line_obj["code"] for line_obj in lines]
     assert "CR" in line_codes
     assert "WR" in line_codes
     assert "HR" in line_codes

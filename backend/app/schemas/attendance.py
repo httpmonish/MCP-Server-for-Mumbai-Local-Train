@@ -1,9 +1,6 @@
-import enum
 import uuid
 from datetime import date, datetime, time
 from typing import List, Optional
-
-from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.attendance import (
     AttendanceRiskStatus,
@@ -11,6 +8,7 @@ from app.models.attendance import (
     AttendanceStatus,
     PolicyAppliesTo,
 )
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AttendancePolicyBase(BaseModel):

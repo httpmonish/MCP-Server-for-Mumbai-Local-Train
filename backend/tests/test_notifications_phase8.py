@@ -5,14 +5,10 @@ from typing import Any, Dict
 
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.main import app
-from app.models.auth import OrgType, Organization, User, UserRole
+from app.models.auth import Organization, OrgType, User, UserRole
 from app.models.notification import (
     DeliveryAttemptStatus,
     Notification,
@@ -40,6 +36,9 @@ from app.notifications.rules import is_in_quiet_hours
 from app.notifications.scheduler import ReminderSchedulerService
 from app.notifications.service import NotificationEngineService
 from app.notifications.worker import NotificationDeliveryWorker
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest_asyncio.fixture
@@ -371,10 +370,7 @@ async def test_notification_permanent_failure_handling(test_session_factory, not
 @pytest.mark.asyncio
 async def test_class_reminder_scheduler_and_cancellation(test_session_factory, notification_test_setup):
     """Test reminder scheduler identifies upcoming classes and suppresses canceled ones."""
-    slot_a = notification_test_setup["slot_a"]
     sched_a = notification_test_setup["sched_a"]
-    user_a = notification_test_setup["user_a"]
-    org_a = notification_test_setup["org_a"]
 
     monday_date = date(2026, 9, 28)  # Monday
 

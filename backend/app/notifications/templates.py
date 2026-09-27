@@ -13,7 +13,7 @@ def render_attendance_alert(payload: Dict[str, Any]) -> Tuple[str, str, str]:
     policy_name = html.escape(str(payload.get("policy_name") or "Statutory Attendance Policy"))
 
     title = f"⚠️ Attendance Alert: {percentage:.1f}% (Below Required {min_required:.1f}%)"
-    
+
     plain_body = (
         f"Your current attendance has fallen to {percentage:.1f}%, which is below the mandatory "
         f"minimum threshold of {min_required:.1f}% under '{policy_name}'.\n\n"

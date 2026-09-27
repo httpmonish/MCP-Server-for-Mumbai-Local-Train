@@ -5,8 +5,6 @@ from typing import Any, Dict
 
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.mcp.auth import (
@@ -42,6 +40,7 @@ from app.models.schedule import (
     ScheduleType,
     UserScheduleAssignment,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest_asyncio.fixture

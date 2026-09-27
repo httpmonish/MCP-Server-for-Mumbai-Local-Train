@@ -1,10 +1,10 @@
 import uuid
 from datetime import date, datetime, time, timedelta, timezone
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -14,7 +14,6 @@ from ..models.schedule import (
     ExceptionType,
     Location,
     Schedule,
-    ScheduleException,
     ScheduleSlot,
     ScheduleType,
     UserScheduleAssignment,
@@ -25,7 +24,6 @@ from ..schemas.schedules import (
     ScheduleAssignRequest,
     ScheduleCreateRequest,
     ScheduleOccurrence,
-    ScheduleSlotInput,
     ScheduleUpdateRequest,
     TodayScheduleResponse,
     WeekScheduleResponse,
@@ -76,7 +74,7 @@ class ScheduleEngineService:
     ) -> List[Location]:
         stmt = (
             select(Location)
-            .where(Location.org_id == org_id, Location.is_active == True)
+            .where(Location.org_id == org_id, Location.is_active.is_(True))
             .order_by(Location.name.asc())
         )
         res = await db.execute(stmt)
@@ -176,7 +174,7 @@ class ScheduleEngineService:
         stmt = (
             select(Schedule)
             .options(selectinload(Schedule.slots))
-            .where(Schedule.org_id == org_id, Schedule.is_active == True)
+            .where(Schedule.org_id == org_id, Schedule.is_active.is_(True))
         )
         if type:
             stmt = stmt.where(Schedule.type == type)
@@ -321,7 +319,7 @@ class ScheduleEngineService:
             .where(
                 UserScheduleAssignment.user_id == user.id,
                 UserScheduleAssignment.org_id == user.org_id,
-                UserScheduleAssignment.is_active == True,
+                UserScheduleAssignment.is_active.is_(True),
                 UserScheduleAssignment.valid_from <= today_date,
                 or_(
                     UserScheduleAssignment.valid_until.is_(None),
@@ -417,7 +415,7 @@ class ScheduleEngineService:
             .where(
                 UserScheduleAssignment.user_id == user.id,
                 UserScheduleAssignment.org_id == user.org_id,
-                UserScheduleAssignment.is_active == True,
+                UserScheduleAssignment.is_active.is_(True),
                 UserScheduleAssignment.valid_from <= week_end,
                 or_(
                     UserScheduleAssignment.valid_until.is_(None),

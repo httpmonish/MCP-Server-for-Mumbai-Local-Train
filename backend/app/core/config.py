@@ -65,6 +65,18 @@ class Settings(BaseSettings):
     NOTIFICATION_INITIAL_RETRY_DELAY_SEC: int = 5
     NOTIFICATION_RATE_LIMIT: str = "60/minute"
 
+    # Observability, Reliability & Security Hardening (Phase 9)
+    APP_VERSION: str = "1.0.0"
+    GIT_COMMIT: str = "main"
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "json"  # json | console
+    SENTRY_DSN: str = ""
+    SENTRY_ENVIRONMENT: str = "development"
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.1
+    SECURITY_HEADERS_ENABLED: bool = True
+    ALLOWED_CORS_ORIGINS: list[str] = ["*"]
+    REQUEST_TIMEOUT_SECONDS: float = 15.0
+
     @field_validator("JWT_SECRET_KEY")
     @classmethod
     def validate_jwt_secret(cls, v: str) -> str:

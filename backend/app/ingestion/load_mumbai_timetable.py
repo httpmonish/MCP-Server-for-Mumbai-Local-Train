@@ -1,22 +1,16 @@
 import asyncio
 import uuid
-from datetime import datetime, timezone
-from typing import List
 
 from sqlalchemy import select
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from ..core.config import settings
 from ..core.logger import get_logger
-from ..models.base import Base
-from ..models.train import TrainSchedule
 from ..models.transit import Station, TransitDataSource, TransitDataSourceType, TransitLine
 from ..services.mumbai_local_data import (
     CENTRAL_STATIONS,
     HARBOUR_STATIONS,
     LINES,
-    MASTER_SCHEDULES,
     WESTERN_STATIONS,
 )
 

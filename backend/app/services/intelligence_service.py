@@ -1,11 +1,7 @@
 import logging
-import uuid
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import datetime, time, timezone
 from typing import List, Optional
 from zoneinfo import ZoneInfo
-
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cache import RedisCache
 from app.models.auth import User
@@ -34,6 +30,7 @@ from app.services.intelligence_calculator import (
 )
 from app.services.schedule_service import ScheduleEngineService
 from app.services.transit_service import TransitEngineService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger("intelligence_service")
 

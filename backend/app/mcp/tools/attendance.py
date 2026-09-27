@@ -1,8 +1,9 @@
 from typing import Any, Dict, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import get_logger
 from app.services.attendance_service import AttendanceService
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..context import MCPUserContext
 from ..errors import MCPErrorCode, MCPToolException
 

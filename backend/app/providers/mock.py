@@ -1,4 +1,3 @@
-import random
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -45,7 +44,6 @@ class MockTransitProvider(BaseTransitProvider):
 
     async def get_station_board(self, station_code: str) -> Optional[Dict[str, Any]]:
         now = datetime.now(timezone.utc)
-        time_str = now.strftime("%H:%M")
         return {
             "station_code": station_code.upper(),
             "station_name": station_code.upper(),
@@ -87,7 +85,6 @@ class MockTransitProvider(BaseTransitProvider):
         to_station: str,
         live: bool = True,
     ) -> Optional[List[Dict[str, Any]]]:
-        now = datetime.now(timezone.utc)
         return [
             {
                 "train_number": "97011",

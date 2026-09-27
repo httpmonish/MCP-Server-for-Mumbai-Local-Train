@@ -1,10 +1,9 @@
 import pytest
-from httpx import AsyncClient
-
 from app.core.config import settings
 from app.models.transit import DataFreshness, OperationalStatus
 from app.providers.mock import MockTransitProvider
 from app.providers.railradar import RailRadarProvider
+from httpx import AsyncClient
 
 
 @pytest.mark.asyncio

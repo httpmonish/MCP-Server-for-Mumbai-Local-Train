@@ -8,12 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies.auth import (
     get_current_user,
     get_db_session,
-    require_hr_or_admin,
     require_org_admin,
     require_role,
-    require_teacher_or_admin,
 )
-from ..models.attendance import AttendanceStatus, PolicyAppliesTo
+from ..models.attendance import AttendanceStatus
 from ..models.auth import User, UserRole
 from ..schemas.attendance import (
     AttendanceAuditResponse,

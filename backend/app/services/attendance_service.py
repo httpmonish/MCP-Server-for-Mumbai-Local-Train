@@ -3,17 +3,10 @@ import uuid
 from datetime import date, datetime, timezone
 from typing import List, Optional, Tuple
 
-from fastapi import HTTPException, status
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
 from app.models.attendance import (
     AttendanceAudit,
     AttendancePolicy,
     AttendanceRecord,
-    AttendanceRiskStatus,
-    AttendanceSource,
     AttendanceStatus,
     PolicyAppliesTo,
 )
@@ -23,7 +16,6 @@ from app.schemas.attendance import (
     AttendanceAuditResponse,
     AttendancePolicyCreate,
     AttendancePolicyResponse,
-    AttendancePolicyUpdate,
     AttendanceRecordCreate,
     AttendanceRecordResponse,
     AttendanceRecordUpdate,
@@ -31,6 +23,10 @@ from app.schemas.attendance import (
     BulkAttendanceCreate,
 )
 from app.services.attendance_calculator import calculate_attendance_summary
+from fastapi import HTTPException, status
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger("attendance_service")
 
@@ -85,7 +81,7 @@ class AttendanceService:
             select(AttendancePolicy)
             .where(
                 AttendancePolicy.org_id == org_id,
-                AttendancePolicy.is_active == True,
+                AttendancePolicy.is_active.is_(True),
                 AttendancePolicy.applies_to.in_([applies_to, PolicyAppliesTo.ALL]),
             )
             .order_by(
@@ -106,7 +102,7 @@ class AttendanceService:
     ) -> AttendanceRecordResponse:
         # 1. Validate target user belongs to org
         user_res = await db.execute(
-            select(User).where(User.id == record_in.user_id, User.org_id == org_id, User.is_active == True)
+            select(User).where(User.id == record_in.user_id, User.org_id == org_id, User.is_active.is_(True))
         )
         user = user_res.scalars().first()
         if not user:
@@ -205,7 +201,7 @@ class AttendanceService:
 
         for item in bulk_in.records:
             user_res = await db.execute(
-                select(User).where(User.id == item.user_id, User.org_id == org_id, User.is_active == True)
+                select(User).where(User.id == item.user_id, User.org_id == org_id, User.is_active.is_(True))
             )
             user = user_res.scalars().first()
             if not user:

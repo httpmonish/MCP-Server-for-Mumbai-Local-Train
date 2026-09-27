@@ -2,12 +2,11 @@ import uuid
 from datetime import date, datetime, time, timedelta, timezone
 
 import pytest
-from httpx import AsyncClient
-
 from app.models.attendance import AttendancePolicy, AttendanceRecord, AttendanceStatus, PolicyAppliesTo
-from app.models.auth import OrgType, Organization, User, UserRole
+from app.models.auth import Organization, OrgType, User, UserRole
 from app.models.schedule import Schedule, ScheduleSlot, ScheduleType
 from app.services.attendance_calculator import calculate_attendance_summary
+from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
@@ -130,7 +129,7 @@ async def test_create_policy_and_get_summary_api(client: AsyncClient):
         },
     )
     assert rec1.status_code == 201
-    rec1_id = rec1.json()["id"]
+    assert "id" in rec1.json()
 
     rec2 = await client.post(
         "/api/v1/attendance",

@@ -1,10 +1,11 @@
 from typing import Any, Dict, Optional
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import get_logger
 from app.models.auth import User
 from app.services.intelligence_service import IntelligenceService
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..context import MCPUserContext
 from ..errors import MCPErrorCode, MCPToolException
 

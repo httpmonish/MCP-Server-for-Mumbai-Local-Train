@@ -2,8 +2,6 @@ import uuid
 from datetime import date, datetime, time, timedelta, timezone
 
 import pytest
-from httpx import AsyncClient
-
 from app.schemas.intelligence import (
     CombinedRiskStatus,
     CommuteStatus,
@@ -19,6 +17,7 @@ from app.services.intelligence_calculator import (
     evaluate_combined_risk,
     evaluate_confidence,
 )
+from httpx import AsyncClient
 
 
 def test_pure_intelligence_time_and_margin_calculations():

@@ -1,16 +1,14 @@
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from uuid import UUID
 
-from fastapi import HTTPException, status
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.logger import get_logger
 from ..models.notification import (
     Notification,
-    NotificationChannel,
     NotificationPreference,
     NotificationType,
 )

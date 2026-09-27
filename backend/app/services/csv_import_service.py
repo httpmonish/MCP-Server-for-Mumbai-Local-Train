@@ -1,9 +1,8 @@
 import csv
 import io
-import re
 import secrets
 import uuid
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set
 
 from email_validator import EmailNotValidError, validate_email
 from fastapi import HTTPException, UploadFile, status

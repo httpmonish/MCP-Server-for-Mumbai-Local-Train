@@ -54,7 +54,7 @@ class OrganizationService:
         await db.refresh(org)
 
         logger.info(
-            f"Organization updated successfully.",
+            "Organization updated successfully.",
             extra={"org_id": str(org.id), "updated_fields": list(update_dict.keys())},
         )
         return org

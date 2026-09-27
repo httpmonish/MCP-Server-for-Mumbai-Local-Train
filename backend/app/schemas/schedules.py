@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from ..models.schedule import ExceptionType, ScheduleType
+from ..models.schedule import ScheduleType
 
 
 class LocationCreateRequest(BaseModel):

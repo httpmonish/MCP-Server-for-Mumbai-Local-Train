@@ -8,7 +8,6 @@ from ..core.config import settings
 from ..core.logger import get_logger
 from ..models.transit import (
     DataConfidence,
-    DataFreshness,
     OperationalStatus,
     TransitDataSourceType,
 )

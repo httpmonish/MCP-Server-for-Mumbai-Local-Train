@@ -2,8 +2,9 @@ import asyncio
 import time
 from typing import Any, Dict, Optional
 
-from mcp.server.mcpserver import MCPServer
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from mcp.server.mcpserver import MCPServer
 
 from ..core.config import settings
 from ..core.logger import get_logger
@@ -15,7 +16,7 @@ from .auth import (
     SCOPE_TRANSIT_READ,
     resolve_mcp_user_context,
 )
-from .context import MCPUserContext, get_current_mcp_context, set_mcp_context
+from .context import MCPUserContext, get_current_mcp_context
 from .errors import MCPErrorCode, MCPToolException, format_mcp_error
 from .tools.attendance import handle_get_attendance_summary
 from .tools.intelligence import handle_check_commute_risk

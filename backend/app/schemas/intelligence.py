@@ -1,9 +1,9 @@
 import enum
 import uuid
-from datetime import date, datetime, time
+from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class CommuteStatus(str, enum.Enum):

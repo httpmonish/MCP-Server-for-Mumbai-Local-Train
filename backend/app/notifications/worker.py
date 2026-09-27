@@ -1,16 +1,13 @@
 import random
-import time
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
 
-from sqlalchemy import or_, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..core.config import settings
 from ..core.logger import get_logger
-from ..models.auth import User
 from ..models.notification import (
     DeliveryAttemptStatus,
     Notification,

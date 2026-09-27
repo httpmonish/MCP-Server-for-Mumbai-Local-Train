@@ -167,7 +167,7 @@ class MemberService:
                     User.org_id == org_id,
                     User.role == UserRole.ORG_ADMIN,
                     User.id != target_user.id,
-                    User.is_active == True,
+                    User.is_active.is_(True),
                 )
             )
             count_res = await db.execute(count_stmt)

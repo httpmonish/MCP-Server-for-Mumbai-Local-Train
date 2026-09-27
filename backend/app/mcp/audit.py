@@ -42,6 +42,12 @@ async def record_mcp_tool_audit(
     }
 
     if status == "SUCCESS":
-        logger.info(f"MCP Tool Execution: {tool_name} status={status} user={user_id_str} org={org_id_str} latency={latency_ms:.1f}ms")
+        logger.info(
+            f"MCP Tool Execution: {tool_name} status={status} user={user_id_str} org={org_id_str} latency={latency_ms:.1f}ms",
+            extra=audit_entry,
+        )
     else:
-        logger.warning(f"MCP Tool Error: {tool_name} status={status} error={error_code} user={user_id_str} org={org_id_str} latency={latency_ms:.1f}ms")
+        logger.warning(
+            f"MCP Tool Error: {tool_name} status={status} error={error_code} user={user_id_str} org={org_id_str} latency={latency_ms:.1f}ms",
+            extra=audit_entry,
+        )

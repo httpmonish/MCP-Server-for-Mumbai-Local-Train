@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, time
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,7 +10,6 @@ from ..models.notification import (
     NotificationPriority,
     NotificationStatus,
     NotificationType,
-    OutboxStatus,
 )
 
 

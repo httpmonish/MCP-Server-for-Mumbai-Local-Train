@@ -1,5 +1,5 @@
 from datetime import datetime, time, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import or_, select
@@ -8,14 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..cache import RedisCache
 from ..core.config import settings
 from ..core.logger import get_logger
-from .transit_cache import TransitCacheManager
 from ..models.transit import (
     DataConfidence,
     DataFreshness,
     OperationalStatus,
     Station,
     TransitDataSourceType,
-    TransitLine,
 )
 from ..normalization.transit_normalizer import TransitNormalizer
 from ..providers.base import BaseTransitProvider
@@ -34,14 +32,13 @@ from ..schemas.transit import (
     StationResponse,
 )
 from .mumbai_local_data import (
-    LINES,
     MASTER_SCHEDULES,
     detect_line_for_stations,
     get_all_lines,
-    get_network_health,
     get_stations_for_line,
     match_station,
 )
+from .transit_cache import TransitCacheManager
 
 logger = get_logger(__name__)
 
@@ -63,16 +60,16 @@ class TransitEngineService:
         """Return lines metadata."""
         lines_data = get_all_lines()
         results = []
-        for l in lines_data:
+        for line_item in lines_data:
             results.append(
                 RailwayLineResponse(
-                    code=l["code"],
-                    name=l["name"],
-                    color=l["color"],
-                    description=l.get("description"),
-                    status=l.get("status", "Normal Service"),
-                    punctuality=l.get("punctuality", "98.5%"),
-                    avg_headway_mins=l.get("avg_headway_mins", 4),
+                    code=line_item["code"],
+                    name=line_item["name"],
+                    color=line_item["color"],
+                    description=line_item.get("description"),
+                    status=line_item.get("status", "Normal Service"),
+                    punctuality=line_item.get("punctuality", "98.5%"),
+                    avg_headway_mins=line_item.get("avg_headway_mins", 4),
                 )
             )
         return results
@@ -87,7 +84,7 @@ class TransitEngineService:
         # 1. Try DB if available
         if db:
             try:
-                stmt = select(Station).where(Station.is_active == True)
+                stmt = select(Station).where(Station.is_active.is_(True))
                 if line and line.upper() != "ALL":
                     stmt = stmt.where(Station.line == line.upper())
                 if search:
