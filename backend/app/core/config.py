@@ -45,6 +45,15 @@ class Settings(BaseSettings):
     TRANSIT_CACHE_TTL_SCHEDULE: int = 43200  # 12 hours
     TRANSIT_LIVE_TIMEOUT_SECONDS: float = 3.5
 
+    # MCP (Model Context Protocol) Server Configuration
+    MCP_ENABLED: bool = True
+    MCP_SERVER_NAME: str = "TransitPulse-MCP"
+    MCP_SERVER_VERSION: str = "1.0.0"
+    MCP_TRANSPORT: str = "streamable_http"  # streamable_http | stdio
+    MCP_AUTH_ISSUER: str = "transitpulse-auth"
+    MCP_AUTH_AUDIENCE: str = "transitpulse-mcp"
+    MCP_RATE_LIMIT: str = "30/minute"
+
     @field_validator("JWT_SECRET_KEY")
     @classmethod
     def validate_jwt_secret(cls, v: str) -> str:

@@ -101,3 +101,10 @@ app.include_router(academic.router)
 app.include_router(trains.router)
 app.include_router(metrics.router)
 app.include_router(delays.router)
+
+# Mount MCP (Model Context Protocol) Server endpoint
+if settings.MCP_ENABLED:
+    from .mcp import create_mcp_app
+
+    app.mount("/mcp", create_mcp_app())
+
