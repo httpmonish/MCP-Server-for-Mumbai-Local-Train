@@ -18,6 +18,7 @@ from .routes import (
     health,
     intelligence,
     metrics,
+    notifications,
     organizations,
     schedules,
     trains,
@@ -97,6 +98,7 @@ app.include_router(organizations.router)
 app.include_router(schedules.router)
 app.include_router(attendance.router)
 app.include_router(intelligence.router)
+app.include_router(notifications.router)
 app.include_router(academic.router)
 app.include_router(trains.router)
 app.include_router(metrics.router)

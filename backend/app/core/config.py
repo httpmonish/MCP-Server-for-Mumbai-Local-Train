@@ -54,6 +54,17 @@ class Settings(BaseSettings):
     MCP_AUTH_AUDIENCE: str = "transitpulse-mcp"
     MCP_RATE_LIMIT: str = "30/minute"
 
+    # Notification & Alerting Configuration (Phase 8)
+    NOTIFICATION_EMAIL_PROVIDER: str = "mock"  # mock | sendgrid
+    NOTIFICATION_SENDGRID_API_KEY: str = ""
+    NOTIFICATION_FROM_EMAIL: str = "alerts@transitpulse.io"
+    NOTIFICATION_FROM_NAME: str = "TransitPulse Alerts"
+    NOTIFICATION_DEFAULT_QUIET_HOURS_START: str = "22:00"
+    NOTIFICATION_DEFAULT_QUIET_HOURS_END: str = "06:00"
+    NOTIFICATION_MAX_RETRIES: int = 3
+    NOTIFICATION_INITIAL_RETRY_DELAY_SEC: int = 5
+    NOTIFICATION_RATE_LIMIT: str = "60/minute"
+
     @field_validator("JWT_SECRET_KEY")
     @classmethod
     def validate_jwt_secret(cls, v: str) -> str:
