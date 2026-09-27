@@ -291,6 +291,7 @@ class ScheduleEngineService:
     async def get_user_today_schedule(
         db: AsyncSession,
         user: User,
+        target_date: Optional[date] = None,
     ) -> TodayScheduleResponse:
         """
         Calculate today's schedule occurrences for the authenticated user.
@@ -304,7 +305,7 @@ class ScheduleEngineService:
             user_tz = timezone.utc
 
         now_in_tz = datetime.now(user_tz)
-        today_date = now_in_tz.date()
+        today_date = target_date or now_in_tz.date()
         today_weekday = today_date.weekday()  # 0=Monday, 6=Sunday
         day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
