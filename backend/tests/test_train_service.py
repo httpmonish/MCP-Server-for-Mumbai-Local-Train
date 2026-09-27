@@ -10,16 +10,20 @@ from backend.app.services import train_service
 from backend.tests.fixtures.timetable_data import SAMPLE_PARSED_TRAINS
 
 
-@pytest.mark.parametrize("raw, expected", [
-    ("8.15", time(8, 15)),
-    ("08:15", time(8, 15)),
-    ("0815", time(8, 15)),
-    ("-", None),
-    ("--", None),
-])
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ("8.15", time(8, 15)),
+        ("08:15", time(8, 15)),
+        ("0815", time(8, 15)),
+        ("-", None),
+        ("--", None),
+    ],
+)
 def test_time_normalizer(raw, expected):
     parser = TrainTimetableParser("mock.pdf", "CR")
     assert parser._parse_time(raw) == expected
+
 
 @pytest.mark.asyncio
 async def test_query_chronological_filtering():
@@ -30,6 +34,7 @@ async def test_query_chronological_filtering():
 
     # Create mock model instances from SAMPLE_PARSED_TRAINS
     from backend.app.models.train import TrainSchedule
+
     mock_trains = []
     for t in SAMPLE_PARSED_TRAINS:
         train = MagicMock(spec=TrainSchedule)
@@ -37,7 +42,7 @@ async def test_query_chronological_filtering():
         train.train_number = t["train_number"]
         train.train_type = t["train_type"]
         train.stops_data = t["stops_data"]
-        train.departure_time = t["departure_time"] # Simplified as string for mock, but service expects Time
+        train.departure_time = t["departure_time"]  # Simplified as string for mock, but service expects Time
         # In a real test we'd convert these to actual time objects
         mock_trains.append(train)
 
@@ -57,6 +62,7 @@ async def test_query_chronological_filtering():
     # Let's just call the service and check the filtered results
     # Note: we need to pass real time objects for the comparison in the service
     from datetime import datetime
+
     query_time = time(8, 10)
 
     # Overriding the mock to return specific objects that pass the service's checks
@@ -71,6 +77,7 @@ async def test_query_chronological_filtering():
     assert result["data"][0]["train_number"] == "95703"
     assert len(result["data"]) == 1
 
+
 @pytest.mark.asyncio
 async def test_reverse_direction_rejection():
     mock_db = AsyncMock()
@@ -78,6 +85,7 @@ async def test_reverse_direction_rejection():
     mock_cache.get.return_value = None
 
     from backend.app.models.train import TrainSchedule
+
     mock_trains = []
     for t in SAMPLE_PARSED_TRAINS:
         train = MagicMock(spec=TrainSchedule)
@@ -96,6 +104,7 @@ async def test_reverse_direction_rejection():
     result = await train_service.get_next_trains(mock_db, mock_cache, "Thane", "Byculla", time(0, 0))
 
     assert len(result["data"]) == 0
+
 
 @pytest.mark.asyncio
 async def test_train_caching_hit():
@@ -143,4 +152,3 @@ async def test_kasara_stations_topology_extended():
     assert "Titwala" in station_names
     assert "Asangaon" in station_names
     assert len(stations) == 37
-

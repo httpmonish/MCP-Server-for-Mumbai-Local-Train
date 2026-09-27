@@ -60,9 +60,11 @@ async def get_next_trains(
     all_trains = []
     if db_session:
         try:
-            stmt = select(TrainSchedule).where(
-                TrainSchedule.departure_time >= query_time
-            ).order_by(TrainSchedule.departure_time.asc())
+            stmt = (
+                select(TrainSchedule)
+                .where(TrainSchedule.departure_time >= query_time)
+                .order_by(TrainSchedule.departure_time.asc())
+            )
             result = await db_session.execute(stmt)
             all_trains = result.scalars().all()
         except Exception as e:
@@ -83,12 +85,24 @@ async def get_next_trains(
 
             stops = getattr(train, "stops_data", [])
             source_stop = next(
-                (s for s in stops if match_station(s, source) or s.get("station_name", "").lower() == source.lower() or s.get("station_code", "").upper() == source.upper()),
-                None
+                (
+                    s
+                    for s in stops
+                    if match_station(s, source)
+                    or s.get("station_name", "").lower() == source.lower()
+                    or s.get("station_code", "").upper() == source.upper()
+                ),
+                None,
             )
             dest_stop = next(
-                (s for s in stops if match_station(s, destination) or s.get("station_name", "").lower() == destination.lower() or s.get("station_code", "").upper() == destination.upper()),
-                None
+                (
+                    s
+                    for s in stops
+                    if match_station(s, destination)
+                    or s.get("station_name", "").lower() == destination.lower()
+                    or s.get("station_code", "").upper() == destination.upper()
+                ),
+                None,
             )
 
             if source_stop and dest_stop and source_stop["seq"] < dest_stop["seq"]:
@@ -97,16 +111,18 @@ async def get_next_trains(
                 t2 = datetime.strptime(dest_stop["time"], fmt)
                 duration = (t2 - t1).total_seconds() / 60
 
-                matching_trains.append({
-                    "train_number": train.train_number,
-                    "line": train.line,
-                    "train_type": train.train_type,
-                    "departure_from_source": source_stop["time"],
-                    "arrival_at_destination": dest_stop["time"],
-                    "travel_time_minutes": int(duration),
-                    "platform": getattr(train, "platform", "PF 1"),
-                    "crowd_level": getattr(train, "crowd_level", "Moderate"),
-                })
+                matching_trains.append(
+                    {
+                        "train_number": train.train_number,
+                        "line": train.line,
+                        "train_type": train.train_type,
+                        "departure_from_source": source_stop["time"],
+                        "arrival_at_destination": dest_stop["time"],
+                        "travel_time_minutes": int(duration),
+                        "platform": getattr(train, "platform", "PF 1"),
+                        "crowd_level": getattr(train, "crowd_level", "Moderate"),
+                    }
+                )
 
             if len(matching_trains) >= limit:
                 break
@@ -139,19 +155,21 @@ async def get_next_trains(
                 t2 = datetime.strptime(dest_stop["time"], fmt)
                 duration = max(1, int((t2 - t1).total_seconds() / 60))
 
-                matching_trains.append({
-                    "train_number": sched["train_number"],
-                    "line": sched["line"],
-                    "line_name": sched.get("line_name", f"{sched['line']} Line"),
-                    "train_type": sched["train_type"],
-                    "departure_from_source": source_stop["time"],
-                    "arrival_at_destination": dest_stop["time"],
-                    "travel_time_minutes": duration,
-                    "platform": sched.get("platform", "PF 2"),
-                    "crowd_level": sched.get("crowd_level", "Moderate"),
-                    "source_terminal": sched["source_station"],
-                    "dest_terminal": sched["destination_station"],
-                })
+                matching_trains.append(
+                    {
+                        "train_number": sched["train_number"],
+                        "line": sched["line"],
+                        "line_name": sched.get("line_name", f"{sched['line']} Line"),
+                        "train_type": sched["train_type"],
+                        "departure_from_source": source_stop["time"],
+                        "arrival_at_destination": dest_stop["time"],
+                        "travel_time_minutes": duration,
+                        "platform": sched.get("platform", "PF 2"),
+                        "crowd_level": sched.get("crowd_level", "Moderate"),
+                        "source_terminal": sched["source_station"],
+                        "dest_terminal": sched["destination_station"],
+                    }
+                )
 
             if len(matching_trains) >= limit:
                 break
@@ -188,4 +206,3 @@ class TrainService:
     get_lines_info = staticmethod(get_lines_info)
     get_stations_info = staticmethod(get_stations_info)
     get_network_status_info = staticmethod(get_network_status_info)
-

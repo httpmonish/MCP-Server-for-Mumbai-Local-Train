@@ -38,6 +38,7 @@ def format_attendance_report(student_id: str, data: Dict[str, Any]) -> str:
 
     return "\n".join(output)
 
+
 def format_exam_schedule(student_id: str, data: Dict[str, Any]) -> str:
     exams = data.get("data", [])
     if not exams:
@@ -55,6 +56,7 @@ def format_exam_schedule(student_id: str, data: Dict[str, Any]) -> str:
         output.append("")
 
     return "\n".join(output)
+
 
 def format_train_schedule(
     source: str, destination: str, trains: List[Dict[str, Any]], query_time: str | None = None
@@ -76,4 +78,3 @@ def format_train_schedule(
         )
 
     return "\n".join(output)
-

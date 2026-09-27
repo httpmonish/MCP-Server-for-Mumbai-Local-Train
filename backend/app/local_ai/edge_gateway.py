@@ -134,10 +134,12 @@ class LocalEdgeAIGateway:
 
                 tool_result = await self.execute_tool(func_name, parsed_args, context_credentials)
 
-                messages.append({
-                    "role": "tool",
-                    "content": tool_result,
-                })
+                messages.append(
+                    {
+                        "role": "tool",
+                        "content": tool_result,
+                    }
+                )
 
             # 3. Final synthesis
             final_response = await self.client.chat(

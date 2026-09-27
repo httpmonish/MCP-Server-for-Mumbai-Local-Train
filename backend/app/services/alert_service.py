@@ -28,9 +28,7 @@ class AlertDispatcher:
     def escape_markdown_v2(self, text: str) -> str:
         return escape_markdown_v2(text)
 
-    async def send_telegram_alert(
-        self, message_markdown: str, chat_id: Optional[str] = None
-    ) -> bool:
+    async def send_telegram_alert(self, message_markdown: str, chat_id: Optional[str] = None) -> bool:
         target_chat_id = chat_id or self.telegram_chat_id
         token = self.telegram_bot_token
         if not token or not target_chat_id:
@@ -53,9 +51,7 @@ class AlertDispatcher:
                 ALERTS_DISPATCHED_TOTAL.labels(channel="telegram", status="success").inc()
                 return True
             else:
-                logger.error(
-                    f"Telegram alert failed with HTTP {response.status_code}: {response.text}"
-                )
+                logger.error(f"Telegram alert failed with HTTP {response.status_code}: {response.text}")
                 ALERTS_DISPATCHED_TOTAL.labels(channel="telegram", status="failure").inc()
                 return False
         except Exception as exc:
@@ -70,9 +66,7 @@ class AlertDispatcher:
                 ALERTS_DISPATCHED_TOTAL.labels(channel="webhook", status="success").inc()
                 return True
             else:
-                logger.error(
-                    f"Webhook alert failed with HTTP {response.status_code}: {response.text}"
-                )
+                logger.error(f"Webhook alert failed with HTTP {response.status_code}: {response.text}")
                 ALERTS_DISPATCHED_TOTAL.labels(channel="webhook", status="failure").inc()
                 return False
         except Exception as exc:

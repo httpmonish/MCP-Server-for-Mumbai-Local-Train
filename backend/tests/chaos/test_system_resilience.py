@@ -17,7 +17,9 @@ async def test_resilience_under_portal_latency_jitter():
 
     client = TestClient(app)
     mock_attendance = {
-        "data": [{"subject_name": "Operating Systems", "total_conducted": 30, "total_attended": 28, "percentage": 93.3}],
+        "data": [
+            {"subject_name": "Operating Systems", "total_conducted": 30, "total_attended": 28, "percentage": 93.3}
+        ],
         "source": "live",
         "stale": False,
     }

@@ -12,6 +12,7 @@ class MockRequest:
     def __init__(self, params):
         self.params = params
 
+
 @pytest.mark.asyncio
 async def test_list_tools_schema():
     # call the handler directly
@@ -27,6 +28,7 @@ async def test_list_tools_schema():
     assert "student_id" in attendance_tool.input_schema["properties"]
     assert "student_id" in attendance_tool.input_schema["required"]
 
+
 @pytest.mark.asyncio
 async def test_call_tool_attendance_formatting():
     # Mock the orchestrator result
@@ -36,7 +38,7 @@ async def test_call_tool_attendance_formatting():
             {"subject_name": "Physics", "total_conducted": 10, "total_attended": 9, "percentage": 90.0},
         ],
         "source": "live",
-        "stale": False
+        "stale": False,
     }
 
     with patch("backend.mcp_server.tools.get_orchestrator", new_callable=AsyncMock) as mock_get_orch:
@@ -45,12 +47,15 @@ async def test_call_tool_attendance_formatting():
         mock_get_orch.return_value = mock_orch
 
         # Simulate a request
-        req = MockRequest({"name": "get_student_attendance", "arguments": {"student_id": "241635", "username": "u", "password": "p"}})
+        req = MockRequest(
+            {"name": "get_student_attendance", "arguments": {"student_id": "241635", "username": "u", "password": "p"}}
+        )
         result = await call_tool_handler(req)
         text = result[0].text
         assert "CRITICAL WARNING (<75%)" in text
         assert "GOOD" in text
         assert "Math" in text
+
 
 @pytest.mark.asyncio
 async def test_call_tool_trains_empty():
@@ -62,6 +67,7 @@ async def test_call_tool_trains_empty():
         result = await call_tool_handler(req)
         text = result[0].text
         assert "No upcoming suburban trains found" in text
+
 
 @pytest.mark.asyncio
 async def test_call_tool_unknown_name_error():

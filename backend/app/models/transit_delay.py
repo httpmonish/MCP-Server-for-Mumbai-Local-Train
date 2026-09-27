@@ -1,16 +1,16 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Uuid
 from sqlalchemy.dialects.postgresql import UUID
 
-from .academic import Base
+from .base import Base
 
 
 class TrainDelayReport(Base):
     __tablename__ = "train_delay_reports"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True).with_variant(UUID(as_uuid=True), "postgresql"), primary_key=True, default=uuid.uuid4)
     train_number = Column(String(20), nullable=False, index=True)
     station_code = Column(String(10), nullable=False, index=True)
     reported_delay_minutes = Column(Integer, nullable=False)

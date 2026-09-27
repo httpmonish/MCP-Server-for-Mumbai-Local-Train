@@ -1,21 +1,67 @@
-import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from .cache import RedisCache
 from .core.config import settings
+from .core.logger import get_logger
 from .core.rate_limiter import limiter, rate_limit_handler
-from .routes import academic, delays, health, metrics, trains
+from .models.base import Base
+from .routes import academic, auth, delays, health, metrics, organizations, trains
 from .scrapers.college_portal import CollegePortalScraper
 from .services.academic_orchestrator import AcademicOrchestrator
 
-app = FastAPI(title="Academic MCP Data Server")
+logger = get_logger(__name__)
 
-# Setup CORS
+# Database Setup
+DATABASE_URL = settings.DATABASE_URL
+engine = create_async_engine(DATABASE_URL)
+async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+# Global Cache & Services
+cache = RedisCache(settings.REDIS_URL)
+scraper = CollegePortalScraper(base_url="https://college.portal")
+orchestrator = AcademicOrchestrator(
+    scraper=scraper,
+    cache=cache,
+    db_session_factory=async_session_factory,
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Try to verify and create tables
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database schema initialized successfully.")
+    except Exception as e:
+        logger.warning(f"Database connection skipped during startup ({e}). Operating in degraded/fallback mode.")
+
+    yield
+
+    # Shutdown: Clean up connections
+    try:
+        await cache.close()
+    except Exception as e:
+        logger.warning(f"Cache close error during shutdown: {e}")
+    try:
+        await engine.dispose()
+    except Exception as e:
+        logger.warning(f"Engine dispose error during shutdown: {e}")
+
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version="1.0.0",
+    description="Identity, Authentication, Multi-tenant Organization Management, and Commuter Telemetry Platform",
+    lifespan=lifespan,
+)
+
+# Setup CORS with explicit security policy
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,36 +74,16 @@ app.add_middleware(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
-# Database Setup
-DATABASE_URL = settings.DATABASE_URL
-engine = create_async_engine(DATABASE_URL)
-async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
-
-# Global Dependencies
-cache = RedisCache(settings.REDIS_URL)
-scraper = CollegePortalScraper(base_url="https://college.portal")
-orchestrator = AcademicOrchestrator(
-    scraper=scraper,
-    cache=cache,
-    db_session_factory=async_session_factory
-)
-
-# Attach to state for dependency injection
+# Attach dependencies to state
+app.state.async_session_factory = async_session_factory
+app.state.cache = cache
 app.state.orchestrator = orchestrator
 
 # Register Routers
 app.include_router(health.router)
+app.include_router(auth.router)
+app.include_router(organizations.router)
 app.include_router(academic.router)
 app.include_router(trains.router)
 app.include_router(metrics.router)
 app.include_router(delays.router)
-
-# Mount frontend build if present
-dist_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend-v2", "dist")
-if os.path.exists(dist_path):
-    app.mount("/", StaticFiles(directory=dist_path, html=True), name="frontend")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await cache.close()
-

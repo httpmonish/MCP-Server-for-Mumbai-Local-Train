@@ -8,32 +8,32 @@ from ..cache import RedisCache
 
 router = APIRouter()
 
+
 # Dependency to get a DB session (simplified for health check)
 # In a real app, this would use the app's session factory
 async def get_db_session():
     from ..main import async_session_factory
+
     async with async_session_factory() as session:
         yield session
 
+
 async def get_cache():
     from ..main import cache
+
     return cache
+
 
 @router.get("/health")
 @router.get("/health/live")
 async def health_check():
     """Basic liveness probe."""
-    return {
-        "status": "alive",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
+    return {"status": "alive", "timestamp": datetime.now(timezone.utc).isoformat()}
+
 
 @router.get("/ready")
 @router.get("/health/ready")
-async def readiness_check(
-    db_session: AsyncSession = Depends(get_db_session),
-    cache: RedisCache = Depends(get_cache)
-):
+async def readiness_check(db_session: AsyncSession = Depends(get_db_session), cache: RedisCache = Depends(get_cache)):
     """Readiness probe checking downstream dependencies."""
     services = {}
     is_ready = True
@@ -58,15 +58,6 @@ async def readiness_check(
         is_ready = False
 
     if is_ready:
-        return {
-            "status": "ready",
-            "services": services
-        }
+        return {"status": "ready", "services": services}
     else:
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "status": "degraded",
-                "services": services
-            }
-        )
+        raise HTTPException(status_code=503, detail={"status": "degraded", "services": services})

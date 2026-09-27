@@ -13,6 +13,7 @@ from ..mcp_server.formatters import format_attendance_report, format_exam_schedu
 # Shared Resources (initialized lazily or as singletons)
 _resources = {}
 
+
 async def get_orchestrator():
     if "orchestrator" not in _resources:
         engine = create_async_engine(mcp_settings.DATABASE_URL)
@@ -22,10 +23,12 @@ async def get_orchestrator():
         _resources["orchestrator"] = AcademicOrchestrator(scraper, cache, session_factory)
     return _resources["orchestrator"]
 
+
 async def get_cache():
     if "cache" not in _resources:
         _resources["cache"] = RedisCache(mcp_settings.REDIS_URL)
     return _resources["cache"]
+
 
 async def get_db_session():
     if "session_factory" not in _resources:
@@ -34,6 +37,7 @@ async def get_db_session():
 
     async with _resources["session_factory"]() as session:
         yield session
+
 
 async def handle_get_attendance(student_id: str, username: Optional[str] = None, password: Optional[str] = None) -> str:
     # Resolve credentials
@@ -50,7 +54,10 @@ async def handle_get_attendance(student_id: str, username: Optional[str] = None,
     except Exception as e:
         return f"Tool Execution Error: {str(e)}"
 
-async def handle_get_upcoming_exams(student_id: str, username: Optional[str] = None, password: Optional[str] = None) -> str:
+
+async def handle_get_upcoming_exams(
+    student_id: str, username: Optional[str] = None, password: Optional[str] = None
+) -> str:
     # Resolve credentials
     user = username or mcp_settings.PORTAL_DEFAULT_USERNAME
     pwd = password or mcp_settings.PORTAL_DEFAULT_PASSWORD
@@ -65,15 +72,16 @@ async def handle_get_upcoming_exams(student_id: str, username: Optional[str] = N
     except Exception as e:
         return f"Tool Execution Error: {str(e)}"
 
+
 async def handle_get_next_train(source: str, destination: str, query_time: Optional[str] = None, limit: int = 5) -> str:
     # Parse query_time
     if query_time:
         try:
-            if len(query_time.split(':')) == 2:
-                h, m = map(int, query_time.split(':'))
+            if len(query_time.split(":")) == 2:
+                h, m = map(int, query_time.split(":"))
                 parsed_time = time(h, m)
             else:
-                h, m, s = map(int, query_time.split(':'))
+                h, m, s = map(int, query_time.split(":"))
                 parsed_time = time(h, m, s)
         except ValueError:
             return "Invalid time format. Use HH:MM or HH:MM:SS."
@@ -93,7 +101,7 @@ async def handle_get_next_train(source: str, destination: str, query_time: Optio
                 source=source,
                 destination=destination,
                 query_time=parsed_time,
-                limit=limit
+                limit=limit,
             )
 
         return format_train_schedule(source, destination, result["data"], parsed_time.strftime("%H:%M:%S"))

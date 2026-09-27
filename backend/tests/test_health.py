@@ -17,11 +17,13 @@ async def test_liveness_endpoint():
         assert response.status_code == 200
         assert response.json()["status"] == "alive"
 
+
 @pytest.mark.asyncio
 async def test_readiness_all_healthy():
-    with patch("backend.app.main.async_session_factory") as mock_session_factory, \
-         patch("backend.app.main.cache") as mock_cache:
-
+    with (
+        patch("backend.app.main.async_session_factory") as mock_session_factory,
+        patch("backend.app.main.cache") as mock_cache,
+    ):
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute.return_value = MagicMock()
         mock_session_factory.return_value.__aenter__.return_value = mock_session
@@ -37,11 +39,13 @@ async def test_readiness_all_healthy():
             assert data["services"]["database"] == "connected"
             assert data["services"]["redis"] == "connected"
 
+
 @pytest.mark.asyncio
 async def test_readiness_database_down():
-    with patch("backend.app.main.async_session_factory") as mock_session_factory, \
-         patch("backend.app.main.cache") as mock_cache:
-
+    with (
+        patch("backend.app.main.async_session_factory") as mock_session_factory,
+        patch("backend.app.main.cache") as mock_cache,
+    ):
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute.side_effect = Exception("Connection Timeout")
         mock_session_factory.return_value.__aenter__.return_value = mock_session
@@ -56,11 +60,13 @@ async def test_readiness_database_down():
             assert "database" in data["services"]
             assert "error" in data["services"]["database"]
 
+
 @pytest.mark.asyncio
 async def test_readiness_redis_down():
-    with patch("backend.app.main.async_session_factory") as mock_session_factory, \
-         patch("backend.app.main.cache") as mock_cache:
-
+    with (
+        patch("backend.app.main.async_session_factory") as mock_session_factory,
+        patch("backend.app.main.cache") as mock_cache,
+    ):
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute.return_value = MagicMock()
         mock_session_factory.return_value.__aenter__.return_value = mock_session

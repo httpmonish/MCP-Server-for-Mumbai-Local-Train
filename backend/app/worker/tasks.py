@@ -86,9 +86,7 @@ async def task_morning_commute_digest(
             if float(r.get("percentage", 100.0)) < 75.0:
                 cond = r.get("total_conducted", 0)
                 att = r.get("total_attended", 0)
-                critical_lines.append(
-                    f"- {r['subject_name']}: {r['percentage']}% ({att}/{cond}) -> *CRITICAL*"
-                )
+                critical_lines.append(f"- {r['subject_name']}: {r['percentage']}% ({att}/{cond}) -> *CRITICAL*")
 
         if not critical_lines:
             attendance_summary = "All courses above 75% requirement."
@@ -123,9 +121,7 @@ async def task_morning_commute_digest(
         # 6: Dispatch via Telegram
         alert_dispatcher = AlertDispatcher(telegram_chat_id=telegram_chat_id)
         try:
-            return await alert_dispatcher.send_telegram_alert(
-                briefing_message, chat_id=telegram_chat_id
-            )
+            return await alert_dispatcher.send_telegram_alert(briefing_message, chat_id=telegram_chat_id)
         finally:
             await alert_dispatcher.aclose()
 
@@ -134,9 +130,7 @@ async def task_morning_commute_digest(
         raise Retry(defer=ctx.get("job_try", 1) * 30) from exc
 
 
-async def task_background_cache_warm(
-    ctx: dict, stations_pair: Optional[List[Tuple[str, str]]] = None
-) -> int:
+async def task_background_cache_warm(ctx: dict, stations_pair: Optional[List[Tuple[str, str]]] = None) -> int:
     """Pre-fetch next trains for high-traffic commuter routes during peak hours
 
     and pre-populate Redis cache.

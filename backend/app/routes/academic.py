@@ -9,10 +9,12 @@ from ..services.academic_orchestrator import AcademicOrchestrator
 
 router = APIRouter(prefix="/api/v1/academic", tags=["Academic"])
 
+
 class CredentialsPayload(BaseModel):
     username: str
     password: str
     campus_code: str = "MU_STANDARD"
+
 
 # In a real application, the orchestrator would be injected via a dependency
 # For this implementation, we define a provider function
@@ -20,7 +22,9 @@ async def get_orchestrator():
     # This is a simplified injection. In production, these would be managed by the app state.
     # We'll assume they are available on the app state or managed globally.
     from ..main import app
+
     return app.state.orchestrator
+
 
 @router.post("/attendance/{student_id}")
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
@@ -28,7 +32,7 @@ async def get_attendance(
     request: Request,
     student_id: str,
     payload: CredentialsPayload,
-    orchestrator: AcademicOrchestrator = Depends(get_orchestrator)
+    orchestrator: AcademicOrchestrator = Depends(get_orchestrator),
 ):
     try:
         CampusAdapterRegistry.get_adapter(payload.campus_code)
@@ -44,13 +48,14 @@ async def get_attendance(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
+
 @router.post("/exams/{student_id}")
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_exams(
     request: Request,
     student_id: str,
     payload: CredentialsPayload,
-    orchestrator: AcademicOrchestrator = Depends(get_orchestrator)
+    orchestrator: AcademicOrchestrator = Depends(get_orchestrator),
 ):
     try:
         return await orchestrator.get_exams(student_id, payload.dict())

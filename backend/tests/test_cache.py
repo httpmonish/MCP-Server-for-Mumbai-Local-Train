@@ -18,6 +18,7 @@ async def cache():
     yield cache_instance
     await cache_instance.close()
 
+
 @pytest.mark.asyncio
 async def test_cache_lifecycle(cache):
     key = "test_key"
@@ -33,6 +34,7 @@ async def test_cache_lifecycle(cache):
     assert await cache.delete(key) is True
     assert await cache.get(key) is None
 
+
 @pytest.mark.asyncio
 async def test_cache_expiration(cache):
     key = "expire_key"
@@ -45,6 +47,7 @@ async def test_cache_expiration(cache):
     # Sleep until expired
     await asyncio.sleep(1.1)
     assert await cache.get(key) is None
+
 
 @pytest.mark.asyncio
 async def test_redis_unreachable_fail_open():

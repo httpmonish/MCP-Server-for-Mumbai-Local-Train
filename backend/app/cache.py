@@ -7,6 +7,7 @@ from .core.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 class RedisCache:
     def __init__(self, redis_url: str):
         self.client = redis.from_url(redis_url, decode_responses=True)

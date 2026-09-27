@@ -11,6 +11,7 @@ from .tools import handle_get_attendance, handle_get_next_train, handle_get_upco
 
 app = Server(mcp_settings.MCP_SERVER_NAME)
 
+
 async def list_tools_handler(request):
     return [
         types.Tool(
@@ -45,15 +46,25 @@ async def list_tools_handler(request):
             input_schema={
                 "type": "object",
                 "properties": {
-                    "source": {"type": "string", "description": "Departure railway station name or station code (e.g. Thane, TNA)."},
-                    "destination": {"type": "string", "description": "Arrival railway station name or station code (e.g. Byculla, BY)."},
-                    "query_time": {"type": "string", "description": "Query time in HH:MM:SS format (defaults to current time)."},
+                    "source": {
+                        "type": "string",
+                        "description": "Departure railway station name or station code (e.g. Thane, TNA).",
+                    },
+                    "destination": {
+                        "type": "string",
+                        "description": "Arrival railway station name or station code (e.g. Byculla, BY).",
+                    },
+                    "query_time": {
+                        "type": "string",
+                        "description": "Query time in HH:MM:SS format (defaults to current time).",
+                    },
                     "limit": {"type": "integer", "description": "Number of upcoming trains to return.", "default": 5},
                 },
                 "required": ["source", "destination"],
             },
         ),
     ]
+
 
 async def call_tool_handler(request):
     # In MCP SDK, request.params usually contains the name and arguments
@@ -89,13 +100,16 @@ async def call_tool_handler(request):
     except Exception as err:
         return [types.TextContent(type="text", text=f"Tool Execution Error: {str(err)}")]
 
+
 # Correctly register handlers using the Server.add_request_handler method
 # Signature: (self, method, params_type, handler)
 app.add_request_handler("list_tools", Any, list_tools_handler)
 app.add_request_handler("call_tool", Any, call_tool_handler)
 
+
 async def _app_list_tools():
     return await list_tools_handler(None)
+
 
 app.list_tools = _app_list_tools
 
@@ -112,6 +126,8 @@ async def run_mcp():
         )
         await app.run(read_stream, write_stream, init_options)
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(run_mcp())

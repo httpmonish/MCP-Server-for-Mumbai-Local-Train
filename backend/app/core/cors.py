@@ -29,5 +29,5 @@ def setup_cors(app):
         allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
         expose_headers=["Content-Length", "X-Response-Time"],
-        max_age=86400, # Cache preflight responses for 24 hours
+        max_age=86400,  # Cache preflight responses for 24 hours
     )

@@ -13,8 +13,8 @@ SAMPLE_PARSED_TRAINS = [
             {"station_code": "BY", "station_name": "Byculla", "time": "08:08:00", "seq": 2},
             {"station_code": "DR", "station_name": "Dadar", "time": "08:18:00", "seq": 3},
             {"station_code": "TNA", "station_name": "Thane", "time": "08:52:00", "seq": 4},
-            {"station_code": "KYN", "station_name": "Kalyan", "time": "09:30:00", "seq": 5}
-        ]
+            {"station_code": "KYN", "station_name": "Kalyan", "time": "09:30:00", "seq": 5},
+        ],
     },
     {
         "line": "CR",
@@ -30,7 +30,7 @@ SAMPLE_PARSED_TRAINS = [
             {"station_code": "BY", "station_name": "Byculla", "time": "08:22:00", "seq": 2},
             {"station_code": "DR", "station_name": "Dadar", "time": "08:30:00", "seq": 3},
             {"station_code": "TNA", "station_name": "Thane", "time": "08:50:00", "seq": 4},
-            {"station_code": "KYN", "station_name": "Kalyan", "time": "09:15:00", "seq": 5}
-        ]
-    }
+            {"station_code": "KYN", "station_name": "Kalyan", "time": "09:15:00", "seq": 5},
+        ],
+    },
 ]

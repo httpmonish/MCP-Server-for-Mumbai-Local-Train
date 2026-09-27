@@ -44,6 +44,7 @@ class CampusAdapterRegistry:
     @classmethod
     def register(cls, campus_code: str) -> Callable[[Type[BasePortalAdapter]], Type[BasePortalAdapter]]:
         """Decorator to register a portal adapter strategy class."""
+
         def decorator(adapter_cls: Type[BasePortalAdapter]) -> Type[BasePortalAdapter]:
             normalized_code = campus_code.upper()
             adapter_cls.campus_code = normalized_code
@@ -58,10 +59,7 @@ class CampusAdapterRegistry:
         cls._ensure_loaded()
         normalized_code = campus_code.upper()
         if normalized_code not in cls._registry:
-            supported = [
-                f"{code} ({getattr(c, 'campus_name', code)})"
-                for code, c in cls._registry.items()
-            ]
+            supported = [f"{code} ({getattr(c, 'campus_name', code)})" for code, c in cls._registry.items()]
             raise ValueError(
                 f"Unsupported campus code: '{campus_code}'. Supported institutions: {', '.join(supported)}"
             )

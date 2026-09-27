@@ -8,6 +8,7 @@ from ..core.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 class TrainTimetableParser:
     def __init__(self, pdf_path: str, line: str):
         if line not in ["CR", "WR"]:
@@ -49,10 +50,7 @@ class TrainTimetableParser:
         return None
 
     def extract_train_columns(self, page) -> List[Dict[str, Any]]:
-        table = page.extract_table(table_settings={
-            "vertical_strategy": "lines",
-            "horizontal_strategy": "text"
-        })
+        table = page.extract_table(table_settings={"vertical_strategy": "lines", "horizontal_strategy": "text"})
 
         if not table:
             return []
@@ -82,15 +80,17 @@ class TrainTimetableParser:
             # (Simplified for the spec: we check if the row indicates gaps)
             train_type = "FAST" if "FAST" in str(train_type_raw).upper() else "SLOW"
 
-            results.append({
-                "train_number": train_no,
-                "train_type": train_type,
-                "source_station": source,
-                "destination_station": dest,
-                "departure_time": dep_time,
-                "arrival_time": arr_time,
-                "row_data": row # keep for stop extraction
-            })
+            results.append(
+                {
+                    "train_number": train_no,
+                    "train_type": train_type,
+                    "source_station": source,
+                    "destination_station": dest,
+                    "departure_time": dep_time,
+                    "arrival_time": arr_time,
+                    "row_data": row,  # keep for stop extraction
+                }
+            )
 
         return results
 
@@ -111,25 +111,29 @@ class TrainTimetableParser:
                             # Try to find station name/code
                             # This is a mock-up of the logic
                             station_name = f"Station {i}"
-                            stops_data.append({
-                                "station_code": "UNK",
-                                "station_name": station_name,
-                                "time": parsed_t.strftime("%H:%M:%S"),
-                                "seq": i + 1
-                            })
+                            stops_data.append(
+                                {
+                                    "station_code": "UNK",
+                                    "station_name": station_name,
+                                    "time": parsed_t.strftime("%H:%M:%S"),
+                                    "seq": i + 1,
+                                }
+                            )
 
                     if not stops_data:
                         continue
 
-                    all_trains.append({
-                        "line": self.line,
-                        "train_number": train["train_number"],
-                        "train_type": train["train_type"],
-                        "source_station": train["source_station"],
-                        "destination_station": train["destination_station"],
-                        "departure_time": train["departure_time"],
-                        "arrival_time": train["arrival_time"],
-                        "is_sunday_run": True,
-                        "stops_data": stops_data
-                    })
+                    all_trains.append(
+                        {
+                            "line": self.line,
+                            "train_number": train["train_number"],
+                            "train_type": train["train_type"],
+                            "source_station": train["source_station"],
+                            "destination_station": train["destination_station"],
+                            "departure_time": train["departure_time"],
+                            "arrival_time": train["arrival_time"],
+                            "is_sunday_run": True,
+                            "stops_data": stops_data,
+                        }
+                    )
         return all_trains

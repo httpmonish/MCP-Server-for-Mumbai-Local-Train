@@ -12,6 +12,7 @@ from ..app.models.train import Base as TrainBase
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("migration")
 
+
 async def migrate():
     try:
         logger.info(f"Initializing migration against: {settings.DATABASE_URL}")
@@ -26,7 +27,7 @@ async def migrate():
             await conn.run_sync(TrainBase.metadata.create_all)
 
             # Verify tables exist
-            tables_to_verify = ['attendance_records', 'exam_timetables', 'train_schedules']
+            tables_to_verify = ["attendance_records", "exam_timetables", "train_schedules"]
             for table in tables_to_verify:
                 res = await conn.execute(text(f"SELECT 1 FROM information_schema.tables WHERE table_name = '{table}'"))
                 if not res.scalar():
@@ -39,6 +40,7 @@ async def migrate():
     except Exception as e:
         logger.error(f"Migration failed: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     asyncio.run(migrate())

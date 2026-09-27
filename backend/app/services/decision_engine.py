@@ -28,16 +28,8 @@ class CommuteDecisionEngine:
         target_arrival_time: time,
     ) -> Dict[str, Any]:
         # 1. Analyze Academic Risk
-        warning_subjects = [
-            r["subject_name"]
-            for r in attendance_records
-            if float(r.get("percentage", 100.0)) < 75.0
-        ]
-        sub_70_subjects = [
-            r["subject_name"]
-            for r in attendance_records
-            if float(r.get("percentage", 100.0)) < 70.0
-        ]
+        warning_subjects = [r["subject_name"] for r in attendance_records if float(r.get("percentage", 100.0)) < 75.0]
+        sub_70_subjects = [r["subject_name"] for r in attendance_records if float(r.get("percentage", 100.0)) < 70.0]
 
         today_str = datetime.now().date().isoformat()
         has_exam_today = any(
@@ -51,14 +43,10 @@ class CommuteDecisionEngine:
             if has_exam_today:
                 urgency_reason = "Final examination scheduled for today."
             else:
-                urgency_reason = (
-                    f"Multiple courses severely below 70%: {', '.join(sub_70_subjects)}"
-                )
+                urgency_reason = f"Multiple courses severely below 70%: {', '.join(sub_70_subjects)}"
         elif len(warning_subjects) >= 1:
             risk_level = "MEDIUM"
-            urgency_reason = (
-                f"Attendance shortfall (<75%) in: {', '.join(warning_subjects)}"
-            )
+            urgency_reason = f"Attendance shortfall (<75%) in: {', '.join(warning_subjects)}"
         else:
             risk_level = "LOW"
             urgency_reason = "Attendance in good standing (>75%) and no exams today."

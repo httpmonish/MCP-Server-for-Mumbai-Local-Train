@@ -2,15 +2,35 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/hooks/**/*.{js,ts,jsx,tsx}",
+    "./src/store/**/*.{js,ts,jsx,tsx}",
+    "./src/types/**/*.{js,ts,jsx,tsx}",
+    "./src/api/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
-        hand: ['"Caveat"', 'cursive'],
-        blueprint: ['"Architects Daughter"', 'cursive'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      colors: {
+        obsidian: {
+          DEFAULT: '#080c14',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          800: '#111827',
+          900: '#0b1120',
+          950: '#070b13',
+        },
+        transit: {
+          cr: '#f43f5e',
+          wr: '#0ea5e9',
+          hr: '#10b981',
+          accent: '#06b6d4',
+        },
       },
       keyframes: {
         'train-traverse': {

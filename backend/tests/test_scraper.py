@@ -23,9 +23,7 @@ async def test_offline_scraper_dom_parser_with_fixture():
     mock_cell_4.inner_text = AsyncMock(return_value="75.0%")
 
     mock_row = AsyncMock()
-    mock_row.query_selector_all = AsyncMock(
-        return_value=[mock_cell_1, mock_cell_2, mock_cell_3, mock_cell_4]
-    )
+    mock_row.query_selector_all = AsyncMock(return_value=[mock_cell_1, mock_cell_2, mock_cell_3, mock_cell_4])
 
     mock_page = AsyncMock()
     mock_page.goto = AsyncMock()

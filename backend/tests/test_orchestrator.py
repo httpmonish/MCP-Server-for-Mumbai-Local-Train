@@ -11,11 +11,8 @@ from backend.app.services.academic_orchestrator import AcademicOrchestrator
 
 @pytest.fixture
 def mock_deps():
-    return {
-        "scraper": AsyncMock(),
-        "cache": AsyncMock(),
-        "db_session_factory": MagicMock()
-    }
+    return {"scraper": AsyncMock(), "cache": AsyncMock(), "db_session_factory": MagicMock()}
+
 
 @pytest.mark.asyncio
 async def test_cache_hit_skips_scraper(mock_deps):
@@ -26,11 +23,7 @@ async def test_cache_hit_skips_scraper(mock_deps):
 
     mock_deps["cache"].get.return_value = mock_data
 
-    orchestrator = AcademicOrchestrator(
-        mock_deps["scraper"],
-        mock_deps["cache"],
-        mock_deps["db_session_factory"]
-    )
+    orchestrator = AcademicOrchestrator(mock_deps["scraper"], mock_deps["cache"], mock_deps["db_session_factory"])
 
     # Act
     result = await orchestrator.get_attendance(student_id, creds)
@@ -40,6 +33,7 @@ async def test_cache_hit_skips_scraper(mock_deps):
     assert result["data"] == mock_data
     mock_deps["scraper"].login.assert_not_called()
     mock_deps["scraper"].scrape_attendance.assert_not_called()
+
 
 @pytest.mark.asyncio
 async def test_scraper_failure_triggers_stale_db_fallback(mock_deps):
@@ -65,11 +59,7 @@ async def test_scraper_failure_triggers_stale_db_fallback(mock_deps):
     mock_session.execute.return_value = mock_result
     mock_deps["db_session_factory"].return_value.__aenter__.return_value = mock_session
 
-    orchestrator = AcademicOrchestrator(
-        mock_deps["scraper"],
-        mock_deps["cache"],
-        mock_deps["db_session_factory"]
-    )
+    orchestrator = AcademicOrchestrator(mock_deps["scraper"], mock_deps["cache"], mock_deps["db_session_factory"])
 
     # Act
     result = await orchestrator.get_attendance(student_id, creds)
@@ -79,6 +69,7 @@ async def test_scraper_failure_triggers_stale_db_fallback(mock_deps):
     assert result["stale"] is True
     assert len(result["data"]) == 1
     assert result["data"][0]["subject_name"] == "Math"
+
 
 def test_rate_limiter_triggers_429():
     client = TestClient(app)

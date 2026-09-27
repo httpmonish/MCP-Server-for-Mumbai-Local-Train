@@ -252,46 +252,298 @@ def _add_mins(base_h: int, base_m: int, minutes: int) -> str:
 # UP: Kasara to CSMT (and Kasara to Kalyan)
 # DOWN: CSMT to Kasara
 MINDICATOR_KASARA_UP_SCHEDULES = [
-    {"train_number": "96402", "dep": "03:51", "arr": "06:44", "type": "SLOW", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95402", "dep": "04:18", "arr": "06:40", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95404", "dep": "06:10", "arr": "08:25", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95406", "dep": "06:42", "arr": "09:08", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95408", "dep": "07:18", "arr": "09:38", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95410", "dep": "08:18", "arr": "10:48", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 3"},
-    {"train_number": "95412", "dep": "10:18", "arr": "12:47", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95414", "dep": "11:10", "arr": "13:40", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95416", "dep": "12:19", "arr": "14:48", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95418", "dep": "13:31", "arr": "16:01", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95420", "dep": "14:42", "arr": "17:09", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95422", "dep": "15:35", "arr": "18:05", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95424", "dep": "16:16", "arr": "18:48", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 3"},
-    {"train_number": "95426", "dep": "17:02", "arr": "19:32", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95428", "dep": "18:17", "arr": "20:47", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "95430", "dep": "20:15", "arr": "22:42", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 2"},
-    {"train_number": "95432", "dep": "21:21", "arr": "23:46", "type": "FAST", "dest": "Mumbai CSMT", "platform": "PF 1"},
-    {"train_number": "96406", "dep": "22:15", "arr": "01:05", "type": "SLOW", "dest": "Mumbai CSMT", "platform": "PF 1"},
+    {
+        "train_number": "96402",
+        "dep": "03:51",
+        "arr": "06:44",
+        "type": "SLOW",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95402",
+        "dep": "04:18",
+        "arr": "06:40",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95404",
+        "dep": "06:10",
+        "arr": "08:25",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95406",
+        "dep": "06:42",
+        "arr": "09:08",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95408",
+        "dep": "07:18",
+        "arr": "09:38",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95410",
+        "dep": "08:18",
+        "arr": "10:48",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 3",
+    },
+    {
+        "train_number": "95412",
+        "dep": "10:18",
+        "arr": "12:47",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95414",
+        "dep": "11:10",
+        "arr": "13:40",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95416",
+        "dep": "12:19",
+        "arr": "14:48",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95418",
+        "dep": "13:31",
+        "arr": "16:01",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95420",
+        "dep": "14:42",
+        "arr": "17:09",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95422",
+        "dep": "15:35",
+        "arr": "18:05",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95424",
+        "dep": "16:16",
+        "arr": "18:48",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 3",
+    },
+    {
+        "train_number": "95426",
+        "dep": "17:02",
+        "arr": "19:32",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95428",
+        "dep": "18:17",
+        "arr": "20:47",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "95430",
+        "dep": "20:15",
+        "arr": "22:42",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 2",
+    },
+    {
+        "train_number": "95432",
+        "dep": "21:21",
+        "arr": "23:46",
+        "type": "FAST",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
+    {
+        "train_number": "96406",
+        "dep": "22:15",
+        "arr": "01:05",
+        "type": "SLOW",
+        "dest": "Mumbai CSMT",
+        "platform": "PF 1",
+    },
     {"train_number": "95434", "dep": "23:05", "arr": "00:20", "type": "SLOW", "dest": "Kalyan", "platform": "PF 2"},
 ]
 
 MINDICATOR_KASARA_DOWN_SCHEDULES = [
-    {"train_number": "95401", "dep": "05:00", "arr": "07:28", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 5"},
-    {"train_number": "95403", "dep": "06:55", "arr": "09:23", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95405", "dep": "07:44", "arr": "10:12", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 6"},
-    {"train_number": "95407", "dep": "08:54", "arr": "11:24", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95409", "dep": "09:56", "arr": "12:26", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 5"},
-    {"train_number": "95411", "dep": "11:05", "arr": "13:34", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 7"},
-    {"train_number": "95413", "dep": "12:14", "arr": "14:43", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95415", "dep": "13:12", "arr": "15:42", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 5"},
-    {"train_number": "95417", "dep": "14:08", "arr": "16:38", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 6"},
-    {"train_number": "95419", "dep": "15:24", "arr": "17:54", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95421", "dep": "16:42", "arr": "19:12", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 5"},
-    {"train_number": "95423", "dep": "17:56", "arr": "20:26", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 6"},
-    {"train_number": "95425", "dep": "18:45", "arr": "21:15", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 7"},
-    {"train_number": "95427", "dep": "19:25", "arr": "21:55", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95429", "dep": "20:44", "arr": "23:14", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 5"},
-    {"train_number": "95431", "dep": "21:32", "arr": "00:02", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 6"},
-    {"train_number": "95433", "dep": "22:50", "arr": "01:20", "type": "FAST", "source": "Mumbai CSMT", "platform": "PF 4"},
-    {"train_number": "95435", "dep": "00:15", "arr": "02:45", "type": "SLOW", "source": "Mumbai CSMT", "platform": "PF 5"},
+    {
+        "train_number": "95401",
+        "dep": "05:00",
+        "arr": "07:28",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
+    {
+        "train_number": "95403",
+        "dep": "06:55",
+        "arr": "09:23",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95405",
+        "dep": "07:44",
+        "arr": "10:12",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 6",
+    },
+    {
+        "train_number": "95407",
+        "dep": "08:54",
+        "arr": "11:24",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95409",
+        "dep": "09:56",
+        "arr": "12:26",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
+    {
+        "train_number": "95411",
+        "dep": "11:05",
+        "arr": "13:34",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 7",
+    },
+    {
+        "train_number": "95413",
+        "dep": "12:14",
+        "arr": "14:43",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95415",
+        "dep": "13:12",
+        "arr": "15:42",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
+    {
+        "train_number": "95417",
+        "dep": "14:08",
+        "arr": "16:38",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 6",
+    },
+    {
+        "train_number": "95419",
+        "dep": "15:24",
+        "arr": "17:54",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95421",
+        "dep": "16:42",
+        "arr": "19:12",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
+    {
+        "train_number": "95423",
+        "dep": "17:56",
+        "arr": "20:26",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 6",
+    },
+    {
+        "train_number": "95425",
+        "dep": "18:45",
+        "arr": "21:15",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 7",
+    },
+    {
+        "train_number": "95427",
+        "dep": "19:25",
+        "arr": "21:55",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95429",
+        "dep": "20:44",
+        "arr": "23:14",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
+    {
+        "train_number": "95431",
+        "dep": "21:32",
+        "arr": "00:02",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 6",
+    },
+    {
+        "train_number": "95433",
+        "dep": "22:50",
+        "arr": "01:20",
+        "type": "FAST",
+        "source": "Mumbai CSMT",
+        "platform": "PF 4",
+    },
+    {
+        "train_number": "95435",
+        "dep": "00:15",
+        "arr": "02:45",
+        "type": "SLOW",
+        "source": "Mumbai CSMT",
+        "platform": "PF 5",
+    },
 ]
 
 
@@ -334,11 +586,31 @@ def _build_kasara_stops(
         }
 
         slow_cr_offsets = {
-            "KYN": 75, "THK": 79, "DI": 83, "KOPR": 86, "DIVA": 91,
-            "MBQ": 96, "KLVA": 102, "TNA": 107, "MLND": 112, "NHU": 115,
-            "BND": 118, "KJMG": 121, "VK": 124, "GC": 128, "VVH": 131,
-            "CLA": 135, "SIN": 139, "MTN": 143, "DR": 147, "PR": 150,
-            "CRD": 153, "CHG": 155, "BY": 158, "SNRD": 162, "MSD": 165,
+            "KYN": 75,
+            "THK": 79,
+            "DI": 83,
+            "KOPR": 86,
+            "DIVA": 91,
+            "MBQ": 96,
+            "KLVA": 102,
+            "TNA": 107,
+            "MLND": 112,
+            "NHU": 115,
+            "BND": 118,
+            "KJMG": 121,
+            "VK": 124,
+            "GC": 128,
+            "VVH": 131,
+            "CLA": 135,
+            "SIN": 139,
+            "MTN": 143,
+            "DR": 147,
+            "PR": 150,
+            "CRD": 153,
+            "CHG": 155,
+            "BY": 158,
+            "SNRD": 162,
+            "MSD": 165,
             "CSMT": 170,
         }
 
@@ -362,12 +634,14 @@ def _build_kasara_stops(
                 continue
 
             stop_time = _add_mins(start_h, start_m, offset)
-            stops.append({
-                "station_code": stn["code"],
-                "station_name": stn["name"],
-                "time": stop_time,
-                "seq": seq,
-            })
+            stops.append(
+                {
+                    "station_code": stn["code"],
+                    "station_name": stn["name"],
+                    "time": stop_time,
+                    "seq": seq,
+                }
+            )
             seq += 1
             if stn["name"] == dest_station:
                 break
@@ -387,18 +661,46 @@ def _build_kasara_stops(
         }
 
         slow_down_offsets = {
-            "CSMT": 0, "MSD": 3, "SNRD": 6, "BY": 9, "CHG": 12,
-            "CRD": 15, "PR": 18, "DR": 22, "MTN": 26, "SIN": 30,
-            "CLA": 35, "VVH": 39, "GC": 43, "VK": 47, "KJMG": 50,
-            "BND": 53, "NHU": 56, "MLND": 60, "TNA": 65, "KLVA": 70,
-            "MBQ": 75, "DIVA": 80, "KOPR": 84, "DI": 88, "THK": 92,
+            "CSMT": 0,
+            "MSD": 3,
+            "SNRD": 6,
+            "BY": 9,
+            "CHG": 12,
+            "CRD": 15,
+            "PR": 18,
+            "DR": 22,
+            "MTN": 26,
+            "SIN": 30,
+            "CLA": 35,
+            "VVH": 39,
+            "GC": 43,
+            "VK": 47,
+            "KJMG": 50,
+            "BND": 53,
+            "NHU": 56,
+            "MLND": 60,
+            "TNA": 65,
+            "KLVA": 70,
+            "MBQ": 75,
+            "DIVA": 80,
+            "KOPR": 84,
+            "DI": 88,
+            "THK": 92,
             "KYN": 97,
         }
 
         # Kalyan to Kasara downstream offsets
         kalyan_to_kasara_down = {
-            "SHAD": 5, "ABY": 8, "TLA": 14, "KDV": 22, "VSD": 30,
-            "ASO": 39, "ATG": 48, "THS": 55, "KE": 62, "OMB": 69,
+            "SHAD": 5,
+            "ABY": 8,
+            "TLA": 14,
+            "KDV": 22,
+            "VSD": 30,
+            "ASO": 39,
+            "ATG": 48,
+            "THS": 55,
+            "KE": 62,
+            "OMB": 69,
             "KSRA": 77,
         }
 
@@ -417,12 +719,14 @@ def _build_kasara_stops(
                 continue
 
             stop_time = _add_mins(start_h, start_m, offset)
-            stops.append({
-                "station_code": stn["code"],
-                "station_name": stn["name"],
-                "time": stop_time,
-                "seq": seq,
-            })
+            stops.append(
+                {
+                    "station_code": stn["code"],
+                    "station_name": stn["name"],
+                    "time": stop_time,
+                    "seq": seq,
+                }
+            )
             seq += 1
             if code == "KSRA":
                 break
@@ -452,21 +756,23 @@ def _generate_comprehensive_schedules() -> List[Dict[str, Any]]:
             continue
 
         crowd = "Heavy Rush" if (7 <= dep_h <= 10 or 17 <= dep_h <= 20) else "Moderate"
-        schedules.append({
-            "line": "CR",
-            "line_name": "Central Line",
-            "train_number": k_up["train_number"],
-            "train_type": k_up["type"],
-            "direction": "UP",
-            "source_station": stops[0]["station_name"],
-            "destination_station": stops[-1]["station_name"],
-            "departure_time": stops[0]["time"],
-            "arrival_time": stops[-1]["time"],
-            "platform": k_up["platform"],
-            "crowd_level": crowd,
-            "is_sunday_run": True,
-            "stops_data": stops,
-        })
+        schedules.append(
+            {
+                "line": "CR",
+                "line_name": "Central Line",
+                "train_number": k_up["train_number"],
+                "train_type": k_up["type"],
+                "direction": "UP",
+                "source_station": stops[0]["station_name"],
+                "destination_station": stops[-1]["station_name"],
+                "departure_time": stops[0]["time"],
+                "arrival_time": stops[-1]["time"],
+                "platform": k_up["platform"],
+                "crowd_level": crowd,
+                "is_sunday_run": True,
+                "stops_data": stops,
+            }
+        )
 
     # 2. Add authentic m-Indicator Kasara DOWN trains (CSMT -> Kasara)
     for k_down in MINDICATOR_KASARA_DOWN_SCHEDULES:
@@ -484,27 +790,29 @@ def _generate_comprehensive_schedules() -> List[Dict[str, Any]]:
             continue
 
         crowd = "Heavy Rush" if (8 <= dep_h <= 10 or 17 <= dep_h <= 21) else "Moderate"
-        schedules.append({
-            "line": "CR",
-            "line_name": "Central Line",
-            "train_number": k_down["train_number"],
-            "train_type": k_down["type"],
-            "direction": "DOWN",
-            "source_station": stops[0]["station_name"],
-            "destination_station": stops[-1]["station_name"],
-            "departure_time": stops[0]["time"],
-            "arrival_time": stops[-1]["time"],
-            "platform": k_down["platform"],
-            "crowd_level": crowd,
-            "is_sunday_run": True,
-            "stops_data": stops,
-        })
+        schedules.append(
+            {
+                "line": "CR",
+                "line_name": "Central Line",
+                "train_number": k_down["train_number"],
+                "train_type": k_down["type"],
+                "direction": "DOWN",
+                "source_station": stops[0]["station_name"],
+                "destination_station": stops[-1]["station_name"],
+                "departure_time": stops[0]["time"],
+                "arrival_time": stops[-1]["time"],
+                "platform": k_down["platform"],
+                "crowd_level": crowd,
+                "is_sunday_run": True,
+                "stops_data": stops,
+            }
+        )
 
     # 3. Add high-density 24-hour corridor schedules for CR (CSMT-Kalyan), WR, and HR
     corridor_configs = [
-        ("CR", CENTRAL_STATIONS[:26], 95000, 8, False),   # CSMT to Kalyan frequent locals
-        ("WR", WESTERN_STATIONS, 90000, 6, False),        # Western Line Churchgate - Virar
-        ("HR", HARBOUR_STATIONS, 98000, 10, True),        # Harbour Line CSMT - Panvel
+        ("CR", CENTRAL_STATIONS[:26], 95000, 8, False),  # CSMT to Kalyan frequent locals
+        ("WR", WESTERN_STATIONS, 90000, 6, False),  # Western Line Churchgate - Virar
+        ("HR", HARBOUR_STATIONS, 98000, 10, True),  # Harbour Line CSMT - Panvel
     ]
 
     for line_code, stations, base_num, headway, is_harbour in corridor_configs:
@@ -549,33 +857,41 @@ def _generate_comprehensive_schedules() -> List[Dict[str, Any]]:
                     elapsed = 0
                     for seq, stn in enumerate(route_stations, start=1):
                         stop_time_str = _add_mins(hour, minute, elapsed)
-                        stops_data.append({
-                            "station_code": stn["code"],
-                            "station_name": stn["name"],
-                            "time": stop_time_str,
-                            "seq": seq,
-                        })
+                        stops_data.append(
+                            {
+                                "station_code": stn["code"],
+                                "station_name": stn["name"],
+                                "time": stop_time_str,
+                                "seq": seq,
+                            }
+                        )
                         elapsed += inter_station_mins
 
                     crowd_pool = ["Low", "Moderate", "Heavy Rush", "Normal"]
-                    crowd = "Heavy Rush" if (8 <= hour <= 10 or 17 <= hour <= 20) else crowd_pool[curr_train_idx % len(crowd_pool)]
+                    crowd = (
+                        "Heavy Rush"
+                        if (8 <= hour <= 10 or 17 <= hour <= 20)
+                        else crowd_pool[curr_train_idx % len(crowd_pool)]
+                    )
                     platform = f"PF {(curr_train_idx % 4) + 1}"
 
-                    schedules.append({
-                        "line": line_code,
-                        "line_name": LINES[line_code]["name"],
-                        "train_number": train_num,
-                        "train_type": train_type,
-                        "direction": direction,
-                        "source_station": stops_data[0]["station_name"],
-                        "destination_station": stops_data[-1]["station_name"],
-                        "departure_time": stops_data[0]["time"],
-                        "arrival_time": stops_data[-1]["time"],
-                        "platform": platform,
-                        "crowd_level": crowd,
-                        "is_sunday_run": True,
-                        "stops_data": stops_data,
-                    })
+                    schedules.append(
+                        {
+                            "line": line_code,
+                            "line_name": LINES[line_code]["name"],
+                            "train_number": train_num,
+                            "train_type": train_type,
+                            "direction": direction,
+                            "source_station": stops_data[0]["station_name"],
+                            "destination_station": stops_data[-1]["station_name"],
+                            "departure_time": stops_data[0]["time"],
+                            "arrival_time": stops_data[-1]["time"],
+                            "platform": platform,
+                            "crowd_level": crowd,
+                            "is_sunday_run": True,
+                            "stops_data": stops_data,
+                        }
+                    )
 
                 minute += step
 
@@ -593,12 +909,14 @@ def get_all_lines() -> List[Dict[str, Any]]:
     results = []
     for code, meta in LINES.items():
         stn_count = len(STATION_MAPS.get(code, []))
-        results.append({
-            **meta,
-            "station_count": stn_count,
-            "start_station": STATION_MAPS[code][0]["name"],
-            "end_station": STATION_MAPS[code][-1]["name"],
-        })
+        results.append(
+            {
+                **meta,
+                "station_count": stn_count,
+                "start_station": STATION_MAPS[code][0]["name"],
+                "end_station": STATION_MAPS[code][-1]["name"],
+            }
+        )
     return results
 
 
@@ -606,19 +924,18 @@ def get_stations_for_line(line_code: Optional[str] = None) -> List[Dict[str, Any
     """Return stations for a line or grouped across all lines."""
     if line_code and line_code.upper() in STATION_MAPS:
         line_upper = line_code.upper()
-        return [
-            {**s, "line": line_upper, "line_name": LINES[line_upper]["name"]}
-            for s in STATION_MAPS[line_upper]
-        ]
+        return [{**s, "line": line_upper, "line_name": LINES[line_upper]["name"]} for s in STATION_MAPS[line_upper]]
 
     all_stns = []
     for code, stations in STATION_MAPS.items():
         for s in stations:
-            all_stns.append({
-                **s,
-                "line": code,
-                "line_name": LINES[code]["name"],
-            })
+            all_stns.append(
+                {
+                    **s,
+                    "line": code,
+                    "line_name": LINES[code]["name"],
+                }
+            )
     return all_stns
 
 
