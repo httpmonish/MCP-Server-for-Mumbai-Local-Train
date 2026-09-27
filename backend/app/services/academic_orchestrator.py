@@ -8,7 +8,7 @@ from sqlalchemy import select
 from ..cache import RedisCache
 from ..core.config import settings
 from ..core.logger import get_logger
-from ..models.academic import AttendanceRecord, ExamTimetable
+from ..models.academic import ExamTimetable, LegacyAcademicAttendance
 from ..scrapers.college_portal import CollegePortalScraper
 from ..scrapers.exceptions import PortalSelectorError, PortalTimeoutError
 from . import academic_service
@@ -87,7 +87,7 @@ class AcademicOrchestrator:
         try:
             async with self.db_session_factory() as db_session:
                 result = await db_session.execute(
-                    select(AttendanceRecord).where(AttendanceRecord.student_id == student_id)
+                    select(LegacyAcademicAttendance).where(LegacyAcademicAttendance.student_id == student_id)
                 )
                 records = result.scalars().all()
                 if records:

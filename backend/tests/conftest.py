@@ -40,6 +40,8 @@ async def client(test_session_factory, fake_redis_cache):
     # Override app state for tests
     app.state.async_session_factory = test_session_factory
     app.state.cache = fake_redis_cache
+    if hasattr(app.state, "limiter"):
+        app.state.limiter.reset()
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

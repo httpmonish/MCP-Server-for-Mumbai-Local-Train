@@ -10,7 +10,7 @@ from .core.config import settings
 from .core.logger import get_logger
 from .core.rate_limiter import limiter, rate_limit_handler
 from .models.base import Base
-from .routes import academic, auth, delays, health, metrics, organizations, schedules, trains
+from .routes import academic, attendance, auth, delays, health, metrics, organizations, schedules, trains
 from .scrapers.college_portal import CollegePortalScraper
 from .services.academic_orchestrator import AcademicOrchestrator
 
@@ -84,6 +84,7 @@ app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(organizations.router)
 app.include_router(schedules.router)
+app.include_router(attendance.router)
 app.include_router(academic.router)
 app.include_router(trains.router)
 app.include_router(metrics.router)

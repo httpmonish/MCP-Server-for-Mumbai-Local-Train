@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>मुंबईTeleport — Live Flow Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-obsidian": "#090A0C",
+            "surface-glow": "#14171F",
+            "surface-container-high": "#292a2c",
+            "surface-container-highest": "#343537",
+            "text-primary": "#F5F4F0",
+            "text-secondary": "rgba(255, 255, 255, 0.65)",
+            "text-muted": "rgba(255, 255, 255, 0.40)",
+            primary: "#4edea3",
+            "primary-container": "#10b981",
+            secondary: "#ffb95f",
+            "secondary-container": "#ee9800",
+            tertiary: "#ffb2b7",
+            "tertiary-container": "#ff7886",
+            "signal-rose-glow": "rgba(244, 63, 94, 0.15)",
+            "glass-surface": "rgba(255, 255, 255, 0.03)",
+            "glass-border": "rgba(255, 255, 255, 0.08)",
+            "glass-border-hover": "rgba(255, 255, 255, 0.18)"
+          },
+          fontFamily: {
+            headline: ["EB Garamond", "serif"],
+            "headline-italic": ["EB Garamond", "serif"],
+            body: ["Plus Jakarta Sans", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface-obsidian font-body text-text-primary relative min-h-screen selection:bg-primary-container selection:text-black">
+  <div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,#14171F_0%,transparent_100%)]"></div>
+
+  <!-- Header -->
+  <header class="fixed top-0 w-full z-50 bg-surface-obsidian/85 backdrop-blur-2xl border-b border-glass-border">
+    <div class="h-20 w-full px-4 sm:px-6 max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="flex flex-col">
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-headline text-2xl tracking-tight text-text-primary">मुंबई<span class="font-body text-base font-semibold text-primary tracking-normal">Teleport</span></span>
+          </div>
+          <span class="font-mono text-[10px] uppercase text-text-muted tracking-widest">Suburban Flow Telemetry</span>
+        </div>
+      </div>
+      <div class="hidden lg:flex items-center justify-center flex-1 max-w-2xl px-3">
+        <nav class="flex items-center gap-1 p-1 bg-white/[0.04] backdrop-blur-2xl rounded-full border border-glass-border">
+          <a class="px-4 py-1.5 rounded-full text-xs font-semibold bg-primary-container text-black shadow-[0_0_20px_rgba(16,185,129,0.35)]" href="#">Central Main</a>
+          <a class="px-4 py-1.5 rounded-full text-xs text-text-secondary hover:text-white" href="#">Western Line</a>
+          <a class="px-4 py-1.5 rounded-full text-xs text-text-secondary hover:text-white" href="#">Harbour</a>
+          <a class="px-4 py-1.5 rounded-full text-xs text-text-secondary hover:text-white" href="#">Trans-Harbour</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] backdrop-blur-xl border border-glass-border">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-container shadow-[0_0_8px_rgba(16,185,129,0.9)]"></span>
+          </span>
+          <span class="font-mono text-[11px] text-text-secondary tracking-wider">CR/WR SYNCED • HEADWAY 3m 40s</span>
+        </div>
+        <div class="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-white/[0.03] backdrop-blur-xl border border-glass-border">
+          <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-black text-[18px]">person</span>
+          </div>
+          <div class="hidden md:flex flex-col text-left">
+            <span class="font-body text-xs text-text-primary leading-tight font-medium">Aditya</span>
+            <span class="font-mono text-[9px] text-text-muted leading-tight">VJTI Sem VI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="relative z-10 w-full pt-24 min-h-[calc(100vh-5rem)]">
+    <div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-4 flex flex-col gap-6">
+      
+      <!-- 1. Corridor Selector -->
+      <section class="w-full">
+        <div class="p-2 sm:p-2.5 rounded-3xl sm:rounded-full bg-white/[0.03] backdrop-blur-2xl border border-glass-border shadow-2xl flex flex-col md:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-3 w-full md:w-auto px-4 py-1.5 rounded-full bg-white/[0.02]">
+            <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-primary text-[20px]">train</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-mono text-[10px] text-text-muted uppercase">Origin Platform 05</span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-body text-sm text-text-primary font-medium">Thane</span>
+                <span class="font-mono text-xs text-primary font-medium">[TNA]</span>
+                <span class="hidden xl:inline text-text-muted text-xs font-light">• 08:42 AM Active Gate</span>
+              </div>
+            </div>
+          </div>
+          <button class="w-9 h-9 rounded-full bg-white/[0.04] flex items-center justify-center shrink-0 border border-glass-border">
+            <span class="material-symbols-outlined text-text-secondary text-[18px]">sync_alt</span>
+          </button>
+          <div class="flex items-center gap-3 w-full md:w-auto px-4 py-1.5 rounded-full bg-white/[0.02]">
+            <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-secondary text-[20px]">near_me</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-mono text-[10px] text-text-muted uppercase">Destination Transit Hub</span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-body text-sm text-text-primary font-medium">Matunga / Dadar</span>
+                <span class="font-mono text-xs text-secondary font-medium">[DR]</span>
+                <span class="text-text-muted text-xs hidden lg:inline">• VJTI Academic Campus</span>
+              </div>
+            </div>
+          </div>
+          <button class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-text-primary text-black font-body text-xs font-semibold flex items-center justify-center gap-2">
+            <span>Find Fast Rakes</span>
+            <span class="material-symbols-outlined text-[18px]">bolt</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Block Clearance Topology Map -->
+      <section class="w-full relative rounded-3xl bg-white/[0.02] backdrop-blur-2xl border border-glass-border p-4 sm:p-6 overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-[11px] uppercase text-primary font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+            TMS Block Clearance Telemetry
+          </span>
+          <span class="font-mono text-[11px] text-text-muted">Section: TNA-DR Quad-Track (Down Through)</span>
+        </div>
+        <div class="relative w-full py-4">
+          <svg class="w-full h-28 overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 1000 120">
+            <path d="M 40 60 C 220 20, 320 100, 520 60 C 680 30, 820 90, 960 60" fill="none" stroke="#1f2022" stroke-width="6"/>
+            <path d="M 40 60 C 220 20, 320 100, 520 60 C 680 30, 820 90, 960 60" fill="none" stroke="#4edea3" stroke-width="2.5"/>
+            <circle cx="40" cy="60" r="6" fill="#090A0C" stroke="#4edea3" stroke-width="3"/>
+            <circle cx="280" cy="46" r="5" fill="#090A0C" stroke="#4edea3" stroke-width="2.5"/>
+            <circle cx="520" cy="60" r="5" fill="#090A0C" stroke="#ffb95f" stroke-width="2.5"/>
+            <circle cx="760" cy="56" r="6" fill="#090A0C" stroke="#4edea3" stroke-width="3"/>
+            <circle cx="960" cy="60" r="5" fill="#090A0C" stroke="#3c4a42" stroke-width="2"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 3. Flow Cards & Attendance Radar -->
+      <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-8 flex flex-col gap-4">
+          <!-- Card 1 -->
+          <article class="w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-glass-border p-5 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-full bg-primary/10 text-primary font-mono text-[11px] font-semibold">ON SCHEDULE • #95401 FAST</span>
+              <span class="font-mono text-xs text-primary font-medium">92 km/h • Plat 5 (TNA)</span>
+            </div>
+            <div class="flex items-baseline justify-between py-1">
+              <div class="flex items-baseline gap-3">
+                <span class="font-headline text-3xl">08:47 AM</span>
+                <span class="text-text-muted text-sm">Thane</span>
+                <span class="text-text-muted">➔</span>
+                <span class="font-headline text-3xl text-primary">09:23 AM</span>
+                <span class="text-text-muted text-sm">Dadar</span>
+              </div>
+              <span class="font-mono text-lg text-text-primary">36 mins</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-1 font-mono text-xs">
+              <div class="p-2.5 rounded-xl bg-white/[0.02] border border-glass-border">Load: <span class="text-primary font-medium">78%</span></div>
+              <div class="p-2.5 rounded-xl bg-white/[0.02] border border-glass-border">VJTI Walk: <span class="text-text-primary">6 mins</span></div>
+              <div class="p-2.5 rounded-xl bg-white/[0.02] border border-glass-border">Buffer: <span class="text-primary">+12m</span></div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="lg:col-span-4 flex flex-col gap-4">
+          <!-- Attendance Radar -->
+          <article class="w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-glass-border p-5 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[10px] uppercase text-tertiary font-semibold">VJTI Academic Radar</span>
+              <span class="font-mono text-xs px-2.5 py-1 rounded-full bg-tertiary/10 text-tertiary font-medium">Critical</span>
+            </div>
+            <div class="flex items-center gap-4 py-2">
+              <div class="text-3xl font-headline text-text-primary">74.3<span class="text-tertiary text-lg">%</span></div>
+              <div class="font-headline-italic italic text-xs text-text-secondary">“1 unexcused absence in CS-602 DBMS triggers debarment.”</div>
+            </div>
+            <button class="w-full py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">verified_user</span>
+              <span>Issue Signed Delay Token</span>
+            </button>
+          </article>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="w-full bg-surface-obsidian border-t border-glass-border py-4 mt-8 text-center font-mono text-xs text-text-muted">
+    मुंबईTeleport © 2026 Central & Western Railway Suburban Mesh.
+  </footer>
+</body>
+</html>
