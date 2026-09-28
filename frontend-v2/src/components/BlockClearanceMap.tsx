@@ -118,8 +118,55 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
     return evaluateTrackSpline(normalized);
   }, [trainProgress]);
 
+  // Compute synchronized real-time train journey leg
+  const currentLeg = useMemo(() => {
+    if (!currentStations || currentStations.length < 2) {
+      return {
+        statusText: 'Suburban Transit Tracking Active',
+        subText: 'Real-time Signal Sync',
+        isAtStation: false,
+      };
+    }
+    const count = currentStations.length;
+    const progressFrac = Math.max(0, Math.min(1, (trainProgress - 5) / 90));
+    const segmentSize = 1 / (count - 1);
+    const index = Math.min(count - 2, Math.floor(progressFrac / segmentSize));
+    const localT = (progressFrac - index * segmentSize) / segmentSize;
+
+    const currStn = currentStations[index];
+    const nextStn = currentStations[index + 1];
+
+    if (localT < 0.12) {
+      return {
+        statusText: `At ${currStn.name} [${currStn.code}]`,
+        subText: currStn.departureTime ? `Dep ${currStn.departureTime}` : 'Boarding Active',
+        isAtStation: true,
+        currentStation: currStn,
+        nextStation: nextStn,
+      };
+    } else if (localT > 0.88) {
+      return {
+        statusText: `Arriving at ${nextStn.name} [${nextStn.code}]`,
+        subText: nextStn.arrivalTime ? `Platform Entry ${nextStn.arrivalTime}` : 'Arriving',
+        isAtStation: true,
+        currentStation: nextStn,
+        nextStation: currentStations[index + 2] || null,
+      };
+    } else {
+      return {
+        statusText: `En route to ${nextStn.name} [${nextStn.code}]`,
+        subText: nextStn.arrivalTime ? `ETA: ${nextStn.arrivalTime}` : 'In Transit',
+        isAtStation: false,
+        currentStation: currStn,
+        nextStation: nextStn,
+      };
+    }
+  }, [currentStations, trainProgress]);
+
   const originCode = currentStations[0]?.code || 'ORG';
+  const originDepTime = currentStations[0]?.departureTime || '08:47 AM';
   const destinationCode = currentStations[currentStations.length - 1]?.code || 'DST';
+  const destinationArrTime = currentStations[currentStations.length - 1]?.arrivalTime || '09:23 AM';
 
   return (
     <section className="w-full relative rounded-3xl bg-white/[0.02] backdrop-blur-2xl border border-glass-border p-4 sm:p-6 overflow-hidden">
@@ -136,6 +183,10 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
           </span>
           <span className="text-text-muted">•</span>
           <span className="font-mono text-[11px] text-text-muted">{sectionTitle}</span>
+          <span className="text-text-muted hidden md:inline">•</span>
+          <span className="hidden md:inline font-mono text-[11px] text-primary font-medium">
+            {currentLeg.statusText} ({currentLeg.subText})
+          </span>
         </div>
         <div className="flex items-center gap-4 font-mono text-[11px] text-text-secondary">
           <span className="flex items-center gap-1.5">
@@ -207,11 +258,17 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
             strokeLinecap="round"
           />
 
-          {/* Dynamic Station Nodes Rendered with Line-Specific Accuracy */}
+          {/* Dynamic Station Nodes Rendered with Line-Specific Accuracy & Sequential Timings */}
           {stationNodes.map((node, i) => {
             const isFirst = i === 0;
             const isLast = i === stationNodes.length - 1;
             const anchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
+
+            const timeLabel = isFirst
+              ? `Dep ${node.departureTime || '08:47 AM'}`
+              : isLast
+              ? `Arr ${node.arrivalTime || '09:23 AM'}`
+              : `Arr ${node.arrivalTime || '--:--'} • Dep ${node.departureTime || '--:--'}`;
 
             return (
               <g
@@ -243,7 +300,7 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
                 />
                 <circle cx={node.x} cy={node.y} r="2" fill={i === 2 ? '#ffb95f' : '#4edea3'} />
 
-                {/* Station Label */}
+                {/* Station Name */}
                 <text
                   x={node.labelX}
                   y={node.labelY}
@@ -255,15 +312,30 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
                 >
                   {node.name}
                 </text>
+
+                {/* Code & Distance */}
                 <text
                   x={node.labelX}
-                  y={node.isTop ? node.labelY + 12 : node.labelY + 12}
+                  y={node.labelY + 11}
                   textAnchor={anchor}
                   fill={i === 2 ? '#ffb95f' : '#4edea3'}
                   fontSize="9"
                   fontFamily="monospace"
                 >
                   {node.code} • {node.distanceKm.toFixed(1)} km
+                </text>
+
+                {/* Independent Station Scheduled Timing Badge */}
+                <text
+                  x={node.labelX}
+                  y={node.isTop ? node.labelY - 11 : node.labelY + 22}
+                  textAnchor={anchor}
+                  fill={isFirst || isLast ? '#4edea3' : '#a1a7b4'}
+                  fontSize="8.5"
+                  fontFamily="monospace"
+                  fontWeight="600"
+                >
+                  {timeLabel}
                 </text>
               </g>
             );
@@ -300,7 +372,7 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
           </g>
         </svg>
 
-        {/* Compact Floating Telemetry Badge Above Train */}
+        {/* Compact Floating Telemetry Badge Above Train with Live Synced Station State */}
         <div
           style={{
             left: `${((trainCoord.point.x - 20) / 960) * 100}%`,
@@ -316,10 +388,10 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
                 {activeRake.trainNumber}
               </span>
               <span className="font-mono text-[10px] text-primary font-semibold">
-                {activeRake.speed}
+                {currentLeg.statusText}
               </span>
-              <span className="hidden sm:inline font-mono text-[9px] text-text-muted">
-                • {activeRake.signal}
+              <span className="hidden sm:inline font-mono text-[9px] text-secondary font-medium">
+                • {currentLeg.subText}
               </span>
             </div>
 
@@ -331,12 +403,17 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
                   <span className="text-text-muted text-[10px]">Headway: {activeRake.headway}</span>
                 </div>
                 <div className="text-[10px] text-text-secondary">
+                  <span>Current Leg: <strong className="text-primary">{currentLeg.statusText}</strong></span>
+                  <span className="mx-1.5">•</span>
+                  <span>Timing: <strong className="text-secondary">{currentLeg.subText}</strong></span>
+                </div>
+                <div className="text-[10px] text-text-secondary">
                   <span>Speed: <strong className="text-primary">{activeRake.speed}</strong></span>
                   <span className="mx-1.5">•</span>
                   <span>Signal: <strong className="text-primary">{activeRake.signal}</strong></span>
                 </div>
                 <div className="text-[9px] text-text-muted">
-                  Dwell: 22s • Automatic Door Interlock Active
+                  Chainage: {originCode} → {destinationCode} • Automatic Interlock Active
                 </div>
               </div>
             )}
@@ -344,16 +421,21 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
         </div>
       </div>
 
-      {/* Dynamic Scrub Bar with Line-Specific Origin and Destination */}
+      {/* Dynamic Scrub Bar with Line-Specific Origin & Destination Timings */}
       <div className="mt-2 pt-3 border-t border-glass-border flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[10px] text-text-muted">
         <div className="flex items-center gap-2">
           <span>Live Coordinate:</span>
           <span className="text-primary font-bold">{trainProgress.toFixed(1)}% along Corridor</span>
-          <span className="text-text-muted">• Speed: {activeRake.speed}</span>
+          <span className="text-text-muted">•</span>
+          <span className="text-secondary font-medium">{currentLeg.statusText}</span>
+          <span className="text-text-muted hidden lg:inline">• Speed: {activeRake.speed}</span>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-72">
-          <span className="text-primary font-bold">{originCode}</span>
+        <div className="flex items-center gap-3 w-full sm:w-80">
+          <div className="flex flex-col text-left shrink-0">
+            <span className="text-primary font-bold">{originCode}</span>
+            <span className="text-[9px] text-text-muted">{originDepTime}</span>
+          </div>
           <input
             type="range"
             min={5}
@@ -367,7 +449,10 @@ export const BlockClearanceMap: React.FC<BlockClearanceMapProps> = ({
             onChange={(e) => setTrainProgress(parseFloat(e.target.value))}
             className="w-full accent-primary h-1.5 bg-white/[0.1] rounded-lg cursor-pointer"
           />
-          <span className="text-secondary font-bold">{destinationCode}</span>
+          <div className="flex flex-col text-right shrink-0">
+            <span className="text-secondary font-bold">{destinationCode}</span>
+            <span className="text-[9px] text-text-muted">{destinationArrTime}</span>
+          </div>
         </div>
 
         <span className="text-text-secondary hidden md:inline">

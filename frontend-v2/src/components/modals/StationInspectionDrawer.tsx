@@ -51,8 +51,26 @@ export const StationInspectionDrawer: React.FC<StationInspectionDrawerProps> = (
             </button>
           </div>
 
+          {/* Timetable Schedule Strip */}
+          <div className="grid grid-cols-3 gap-2 my-3 p-3 rounded-2xl bg-white/[0.03] border border-glass-border font-mono">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-text-muted uppercase">Arr Time</span>
+              <span className="text-sm font-bold text-primary">{station.arrivalTime || '--:--'}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-text-muted uppercase">Dep Time</span>
+              <span className="text-sm font-bold text-text-primary">{station.departureTime || '--:--'}</span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-[10px] text-text-muted uppercase">Platform / Dwell</span>
+              <span className="text-xs font-semibold text-secondary">
+                {station.platform || 'PF 02'} • {station.dwellSeconds ? `${station.dwellSeconds}s` : 'Stop'}
+              </span>
+            </div>
+          </div>
+
           {/* Platform Occupancy Matrix */}
-          <div className="flex flex-col gap-3 my-4">
+          <div className="flex flex-col gap-3 my-2">
             <span className="font-mono text-[10px] uppercase text-text-muted tracking-wider">
               Live Platform Clearance & FOB Congestion
             </span>

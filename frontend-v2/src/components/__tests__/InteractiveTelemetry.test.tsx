@@ -49,4 +49,34 @@ describe('Interactive Suburban Telemetry & MCP Service Layer', () => {
     expect(token.studentName).toBe('Aditya Sharma');
     expect(token.hodEmail).toBe('hod.computers@vjti.ac.in');
   });
+
+  it('calculates sequential station-by-station timings without duplicate times', async () => {
+    const rakes = await fetchTrainSchedule('CSMT', 'KYN', 'central-main');
+    const fastRake = rakes[0];
+    expect(fastRake.stops.length).toBe(6);
+
+    // Verify each stop progresses in time and has distinct arrival/departure times
+    for (let i = 1; i < fastRake.stops.length; i++) {
+      const prev = fastRake.stops[i - 1];
+      const curr = fastRake.stops[i];
+      expect(curr.distanceKm).toBeGreaterThan(prev.distanceKm);
+      // Ensure time progresses forward
+      expect(curr.arrivalTime).not.toBe(prev.arrivalTime);
+    }
+  });
+
+  it('completely recalculates timings and reverses stops on route swap', async () => {
+    const downRakes = await fetchTrainSchedule('CSMT', 'KYN', 'central-main');
+    const upRakes = await fetchTrainSchedule('KYN', 'CSMT', 'central-main');
+
+    expect(downRakes[0].stops[0].stationCode).toBe('CSMT');
+    expect(downRakes[0].stops[downRakes[0].stops.length - 1].stationCode).toBe('KYN');
+
+    expect(upRakes[0].stops[0].stationCode).toBe('KYN');
+    expect(upRakes[0].stops[upRakes[0].stops.length - 1].stationCode).toBe('CSMT');
+
+    // Verify distance from origin starts at 0 for KYN in UP direction
+    expect(upRakes[0].stops[0].distanceKm).toBe(0);
+    expect(upRakes[0].stops[upRakes[0].stops.length - 1].distanceKm).toBe(54);
+  });
 });

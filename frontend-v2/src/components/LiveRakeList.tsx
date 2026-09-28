@@ -18,14 +18,9 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
   isLoading = false,
   persona = 'COMMUTER',
 }) => {
-  const [expandedRake, setExpandedRake] = useState<string | null>('95401');
+  const [expandedRake, setExpandedRake] = useState<string | null>('95401-stops');
   const [hoveredCoach, setHoveredCoach] = useState<string | null>(null);
   const [verifiedPassId, setVerifiedPassId] = useState<string | null>(null);
-
-  const toggleDrawer = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedRake(expandedRake === id ? null : id);
-  };
 
   const handleVerifyPass = (rakeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -231,36 +226,127 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
                 </motion.div>
               )}
 
-              {/* Carriage-by-Carriage Real-time Crowding Matrix Accordion */}
+              {/* Carriage Crowding Matrix & Station-by-Station Timetable Accordion */}
               <div className="w-full pt-1">
-                <button
-                  onClick={(e) => toggleDrawer(rake.id, e)}
-                  className="w-full py-2 px-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-glass-border transition-colors flex items-center justify-between font-body text-xs text-text-secondary group-hover:text-text-primary cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-primary">view_column</span>
-                    <span>Carriage-by-Carriage Real-time Crowding Matrix (12 Coaches)</span>
-                  </span>
-                  <div className="flex items-center gap-1 font-mono text-xs text-text-muted">
-                    <span>{expandedRake === rake.id ? 'Collapse' : 'View Carriages Row ˅'}</span>
-                    <span
-                      className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${
-                        expandedRake === rake.id ? 'rotate-180' : ''
-                      }`}
-                    >
-                      expand_more
+                <div className="flex items-center gap-2 mb-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedRake(expandedRake === `${rake.id}-stops` ? null : `${rake.id}-stops`);
+                    }}
+                    className={`flex-1 py-2 px-3 rounded-2xl border transition-all flex items-center justify-between font-body text-xs cursor-pointer ${
+                      expandedRake === `${rake.id}-stops`
+                        ? 'bg-primary/10 border-primary/40 text-primary font-semibold'
+                        : 'bg-white/[0.02] hover:bg-white/[0.05] border-glass-border text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px]">schedule</span>
+                      <span>Station Stops Timetable ({rake.stops?.length || rake.stopsCount} Stops)</span>
                     </span>
-                  </div>
-                </button>
+                    <span className="material-symbols-outlined text-[16px]">
+                      {expandedRake === `${rake.id}-stops` ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
 
-                {/* Expandable 12-Coach Matrix */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedRake(expandedRake === `${rake.id}-coaches` ? null : `${rake.id}-coaches`);
+                    }}
+                    className={`flex-1 py-2 px-3 rounded-2xl border transition-all flex items-center justify-between font-body text-xs cursor-pointer ${
+                      expandedRake === `${rake.id}-coaches`
+                        ? 'bg-primary/10 border-primary/40 text-primary font-semibold'
+                        : 'bg-white/[0.02] hover:bg-white/[0.05] border-glass-border text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px]">view_column</span>
+                      <span>12-Coach Crowd Matrix</span>
+                    </span>
+                    <span className="material-symbols-outlined text-[16px]">
+                      {expandedRake === `${rake.id}-coaches` ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
+                </div>
+
+                {/* 1. Station-by-Station Timetable View */}
                 <AnimatePresence>
-                  {expandedRake === rake.id && (
+                  {expandedRake === `${rake.id}-stops` && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="flex flex-col gap-3 pt-4 px-2 overflow-hidden"
+                      className="flex flex-col gap-2 pt-2 px-1 overflow-hidden"
+                    >
+                      <div className="p-3 rounded-2xl bg-surface-container-high/60 border border-glass-border flex flex-col gap-2">
+                        <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] font-mono text-[10px] text-text-muted uppercase">
+                          <span>Station / Platform</span>
+                          <div className="flex items-center gap-6">
+                            <span>Arrival</span>
+                            <span>Departure</span>
+                            <span>Chainage</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 max-h-56 overflow-y-auto pr-1">
+                          {rake.stops?.map((stop, idx) => {
+                            const isFirst = idx === 0;
+                            const isLast = idx === (rake.stops?.length || 1) - 1;
+
+                            return (
+                              <div
+                                key={`stop-${stop.stationCode}-${idx}`}
+                                className={`px-3 py-2 rounded-xl border transition-colors flex items-center justify-between font-mono text-xs ${
+                                  isFirst || isLast
+                                    ? 'bg-primary/10 border-primary/30 text-primary font-bold'
+                                    : 'bg-white/[0.02] border-transparent hover:border-glass-border text-text-primary'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span
+                                    className={`w-2 h-2 rounded-full ${
+                                      isFirst ? 'bg-primary animate-ping' : isLast ? 'bg-secondary' : 'bg-primary/60'
+                                    }`}
+                                  ></span>
+                                  <div className="flex flex-col text-left">
+                                    <span className="font-semibold text-text-primary">
+                                      {stop.stationName} <span className="text-[10px] text-primary">[{stop.stationCode}]</span>
+                                    </span>
+                                    <span className="text-[9px] text-text-muted">
+                                      {stop.platform} • {stop.dwellSeconds ? `${stop.dwellSeconds}s Dwell` : isLast ? 'Terminus' : 'Origin'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-6 text-right">
+                                  <span className="text-text-secondary w-14">
+                                    {isFirst ? '--:--' : stop.arrivalTime}
+                                  </span>
+                                  <span className="text-text-primary font-semibold w-14">
+                                    {isLast ? '--:--' : stop.departureTime}
+                                  </span>
+                                  <span className="text-text-muted text-[10px] w-12 text-right">
+                                    {stop.distanceKm.toFixed(1)} km
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* 2. Expandable 12-Coach Matrix */}
+                <AnimatePresence>
+                  {expandedRake === `${rake.id}-coaches` && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex flex-col gap-3 pt-2 px-1 overflow-hidden"
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
                         {rake.coachMatrix.map((coach) => (
