@@ -16,6 +16,7 @@ import {
   fetchTrainSchedule,
   calculateAttendanceRisk,
   generateDelayToken,
+  CORRIDOR_STATIONS,
 } from './lib/services/telemetryService';
 import type {
   CorridorId,
@@ -38,11 +39,11 @@ export const MainApp: React.FC = () => {
   const [isReversed, setIsReversed] = useState(false);
   const [fastOnly, setFastOnly] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [persona, setPersona] = useState<PersonaType>('STUDENT');
+  const [persona, setPersona] = useState<PersonaType>('COMMUTER'); // Normal commuter by default
   const [selectedRakeId, setSelectedRakeId] = useState<string>('95401');
   const [isLoadingRakes, setIsLoadingRakes] = useState(false);
 
-  // User Profile
+  // User Profile - null by default (Guest Commuter mode)
   const [currentUser, setCurrentUser] = useState<{
     name: string;
     org: string;
@@ -51,15 +52,7 @@ export const MainApp: React.FC = () => {
     prn?: string;
     semester?: string;
     utsPassId?: string;
-  } | null>({
-    name: 'Aditya Sharma',
-    org: 'Veermata Jijabai Technological Institute (VJTI)',
-    role: 'STUDENT',
-    token: 'tp_demo_token_vjti',
-    prn: 'PRN: 211080042',
-    semester: 'Sem VI • B.Tech CS',
-    utsPassId: 'UTS-II-CR-98401',
-  });
+  } | null>(null);
 
   // Stations & Active Telemetry
   const [corridorTelemetry, setCorridorTelemetry] = useState<{
@@ -72,38 +65,38 @@ export const MainApp: React.FC = () => {
     };
     stations: StationTelemetry[];
   }>({
-    sectionTitle: 'Section: TNA-DR Quad-Track (Down Through)',
+    sectionTitle: 'Section: CSMT → KYN (Central Main Down Through)',
     activeRake: {
       trainNumber: '#95401 FAST',
       speed: '92 km/h',
-      signal: 'Sig S-44 Clear (Proceed Aspect)',
+      signal: 'Sig Clear (Proceed Aspect)',
       headway: 'Headway 3m 40s',
     },
-    stations: [],
+    stations: CORRIDOR_STATIONS['central-main'],
   });
 
   // Schedule Rakes
   const [rakes, setRakes] = useState<TrainRakeTelemetry[]>([]);
 
-  // Origin & Destination
+  // Origin & Destination default
   const [origin, setOrigin] = useState({
-    code: 'TNA',
-    name: 'Thane',
-    platform: '05',
-    activeGate: '08:42 AM Active Gate',
+    code: 'CSMT',
+    name: 'CSMT Terminus',
+    platform: '04',
+    activeGate: 'Main Concourse Gate',
   });
 
   const [destination, setDestination] = useState({
-    code: 'DR',
-    name: 'Matunga / Dadar',
-    campus: 'VJTI Academic Campus',
+    code: 'KYN',
+    name: 'Kalyan Junction',
+    campus: 'Central Suburban Hub',
   });
 
-  // Attendance Risk State
+  // Attendance / Punctuality Risk State
   const [riskData, setRiskData] = useState<AttendanceRiskResult>({
-    studentId: 'VJTI_211080042',
-    studentName: 'Aditya Sharma',
-    college: 'VJTI Mumbai • Sem VI',
+    studentId: 'COMMUTER_98401',
+    studentName: 'Commuter Aditya',
+    college: 'Mumbai Suburban Network',
     currentPercentage: 75.4,
     simulatedPercentage: 75.4,
     minRequiredPercentage: 75.0,
@@ -121,9 +114,9 @@ export const MainApp: React.FC = () => {
   const [tokenData, setTokenData] = useState<DelayTokenPayload>({
     tokenUuid: 'CR-TMS-98412-2026',
     verificationSha256: '9A8B7C6D5E4F3A2B1C0D9E8F7A6B5C4D',
-    studentName: 'Aditya Sharma',
-    rollNumber: '211080042',
-    collegeName: 'VJTI Mumbai',
+    studentName: 'Commuter Aditya',
+    rollNumber: 'COMMUTER-PASS-98401',
+    collegeName: 'Mumbai Suburban Network',
     trainRakeId: '#95201 SLOW',
     lineCorridor: 'Central Main Line',
     delayMinutes: 6,
@@ -132,7 +125,7 @@ export const MainApp: React.FC = () => {
     motormanRemarks: 'Delayed due to precedence given to 12138 Punjab Mail and track circuit drop.',
     issuedAt: '08:45 AM',
     validUntil: '15 Oct 2026',
-    hodEmail: 'hod.computers@vjti.ac.in',
+    hodEmail: 'commuter.support@transitpulse.app',
     digitalSignature: 'CR/MUM/TMS/SIG/2026/098412',
     verificationUrl: 'https://transitpulse.app/verify/delay/CR-TMS-98412',
   });
@@ -148,6 +141,23 @@ export const MainApp: React.FC = () => {
           activeRake: data.activeRake,
           stations: data.stations,
         });
+
+        // Set line-appropriate default origin and destination when switching lines
+        if (data.stations.length >= 2) {
+          const first = data.stations[0];
+          const last = data.stations[data.stations.length - 1];
+          setOrigin({
+            code: first.code,
+            name: first.name,
+            platform: '02',
+            activeGate: 'Active Gate 1',
+          });
+          setDestination({
+            code: last.code,
+            name: last.name,
+            campus: `${activeLine.toUpperCase().replace('-', ' ')} Hub`,
+          });
+        }
       }
     };
     loadCorridor();
@@ -181,7 +191,7 @@ export const MainApp: React.FC = () => {
     let mounted = true;
     const updateRiskAndToken = async () => {
       const risk = await calculateAttendanceRisk(
-        currentUser?.prn || 'VJTI_211080042',
+        currentUser?.prn || 'COMMUTER_98401',
         selectedRakeId,
         '09:30 AM'
       );
@@ -190,15 +200,15 @@ export const MainApp: React.FC = () => {
 
       const token = await generateDelayToken(
         {
-          name: currentUser?.name || 'Aditya Sharma',
-          rollNumber: currentUser?.prn || '211080042',
-          college: currentUser?.org || 'VJTI Mumbai',
+          name: currentUser?.name || 'Commuter Passenger',
+          rollNumber: currentUser?.prn || 'UTS-PASS-98401',
+          college: currentUser?.org || 'Mumbai Suburban Commuter Network',
         },
         {
           trainNumber: selectedTrain?.trainNumber || '#95201 SLOW',
-          corridor: activeLine === 'western-line' ? 'Western Line' : 'Central Main Line',
+          corridor: activeLine.replace('-', ' ').toUpperCase(),
           delayMinutes: selectedTrain?.delayMinutes || 6,
-          failurePoint: 'Sig S-44 Track Circuit Fault (Kurla-Vidyavihar)',
+          failurePoint: 'Sig Track Circuit Drop',
         }
       );
 
@@ -222,19 +232,43 @@ export const MainApp: React.FC = () => {
     const tempOrigin = {
       code: destination.code,
       name: destination.name,
-      platform: nextReversed ? '01' : '05',
-      activeGate: nextReversed ? 'Platform Gate East' : '08:42 AM Active Gate',
+      platform: nextReversed ? '01' : '04',
+      activeGate: nextReversed ? 'Return Platform Gate' : '08:42 AM Active Gate',
     };
     const tempDest = {
       code: origin.code,
       name: origin.name,
-      campus: nextReversed ? 'Thane Central Junction' : 'VJTI Academic Campus',
+      campus: nextReversed ? 'Origin Terminal' : 'Destination Hub',
     };
     setOrigin(tempOrigin);
     setDestination(tempDest);
   };
 
-  // Handle Fast Rakes Filter
+  // Station Pickers
+  const handleSelectOrigin = (st: { code: string; name: string }) => {
+    setOrigin({
+      code: st.code,
+      name: st.name,
+      platform: '02',
+      activeGate: 'Platform Gate Ingress',
+    });
+  };
+
+  const handleSelectDestination = (st: { code: string; name: string }) => {
+    setDestination({
+      code: st.code,
+      name: st.name,
+      campus: `${st.name} Transit Junction`,
+    });
+  };
+
+  // Logout Handler
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setPersona('COMMUTER');
+  };
+
+  // Fast Rakes Filter
   const handleToggleFastOnly = () => {
     setFastOnly((prev) => !prev);
   };
@@ -243,7 +277,7 @@ export const MainApp: React.FC = () => {
     setIsLoadingRakes(true);
     setTimeout(() => {
       setIsLoadingRakes(false);
-    }, 600);
+    }, 500);
   };
 
   return (
@@ -260,18 +294,21 @@ export const MainApp: React.FC = () => {
         onSelectPersona={setPersona}
         onOpenAuth={() => setAuthModalOpen(true)}
         onOpenEditProfile={() => setAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Dashboard */}
       <main className="relative z-10 w-full pt-24 min-h-[calc(100vh-5rem)] pb-12">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-4 flex flex-col gap-6">
-          {/* Corridor Selector */}
+          {/* Corridor & Station Selector */}
           <CorridorSelector
             origin={origin}
             destination={destination}
             isReversed={isReversed}
             fastOnly={fastOnly}
             onSwap={handleSwapCorridor}
+            onSelectOrigin={handleSelectOrigin}
+            onSelectDestination={handleSelectDestination}
             onToggleFastOnly={handleToggleFastOnly}
             onSearch={handleSearchRakes}
             isLoadingRakes={isLoadingRakes}

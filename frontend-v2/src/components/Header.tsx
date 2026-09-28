@@ -19,6 +19,7 @@ interface HeaderProps {
   onSelectPersona: (persona: PersonaType) => void;
   onOpenAuth: () => void;
   onOpenEditProfile: () => void;
+  onLogout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectPersona,
   onOpenAuth,
   onOpenEditProfile,
+  onLogout,
 }) => {
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -134,6 +136,10 @@ export const Header: React.FC<HeaderProps> = ({
               user={user}
               onOpenEditProfile={() => {
                 onOpenEditProfile();
+                setProfileOpen(false);
+              }}
+              onLogout={() => {
+                onLogout();
                 setProfileOpen(false);
               }}
             />
