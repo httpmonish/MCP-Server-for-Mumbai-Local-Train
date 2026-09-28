@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TrainRakeTelemetry } from '../lib/services/telemetryService';
+import type { PersonaType } from './modals/UserProfilePopover';
 
 interface LiveRakeListProps {
   rakes: TrainRakeTelemetry[];
   selectedRakeId: string;
   onSelectRake: (rakeId: string) => void;
   isLoading?: boolean;
+  persona?: PersonaType;
 }
 
 export const LiveRakeList: React.FC<LiveRakeListProps> = ({
@@ -14,6 +16,7 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
   selectedRakeId,
   onSelectRake,
   isLoading = false,
+  persona = 'COMMUTER',
 }) => {
   const [expandedRake, setExpandedRake] = useState<string | null>('95401');
   const [hoveredCoach, setHoveredCoach] = useState<string | null>(null);
@@ -36,12 +39,16 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
       <div className="flex items-end justify-between px-1 pb-2">
         <div className="flex flex-col">
           <span className="font-mono text-[11px] uppercase text-text-muted tracking-widest">
-            Down Local / Fast Telemetry
+            Suburban Local & Fast Telemetry
           </span>
           <div className="flex items-baseline gap-2 mt-0.5">
             <h2 className="font-headline text-3xl tracking-tight text-text-primary">Today’s Flow</h2>
             <span className="font-headline-italic italic text-xl text-text-secondary">
-              VJTI Morning Corridors
+              {persona === 'STUDENT'
+                ? 'VJTI Academic Corridors'
+                : persona === 'CORPORATE'
+                ? 'Corporate Office Corridors'
+                : 'Mumbai Suburban Corridors'}
             </span>
           </div>
         </div>
@@ -120,7 +127,7 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
                   </span>
 
                   <span className="hidden sm:inline font-mono text-[11px] text-text-muted">
-                    • {isAC ? 'Medha Plug-Door AC Rake' : '12-Car ICF Siemens Rake'}
+                    • {isAC ? 'Medha Plug-Door AC Rake' : '12-Car Suburban Siemens EMU'}
                   </span>
 
                   {isSelected && (
@@ -175,7 +182,7 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
                 </div>
               </div>
 
-              {/* Occupancy & VJTI Target Delta */}
+              {/* Occupancy & Commuter Target Delta */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
                 <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
                   <span className="font-body text-xs text-text-muted">Total Load</span>
@@ -184,15 +191,19 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
                       rake.totalLoadPercent > 85 ? 'text-secondary' : 'text-primary'
                     }`}
                   >
-                    {rake.totalLoadPercent}% ({rake.totalLoadPercent > 85 ? 'Heavy Load' : 'Moderate Density'})
+                    {rake.totalLoadPercent}% ({rake.totalLoadPercent > 85 ? 'Heavy Density' : 'Comfortable'})
                   </span>
                 </div>
                 <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
-                  <span className="font-body text-xs text-text-muted">VJTI Walk</span>
-                  <span className="font-mono text-xs text-text-primary font-medium">6 mins from Matunga E.</span>
+                  <span className="font-body text-xs text-text-muted">
+                    {persona === 'STUDENT' ? 'VJTI Walk' : 'Destination Egress'}
+                  </span>
+                  <span className="font-mono text-xs text-text-primary font-medium">
+                    {persona === 'STUDENT' ? '6 mins to Mechanical Bldg' : '5 mins walk to concourse exit'}
+                  </span>
                 </div>
                 <div className="p-3 rounded-2xl bg-white/[0.02] border border-glass-border flex items-center justify-between">
-                  <span className="font-body text-xs text-text-muted">Attendance Delta</span>
+                  <span className="font-body text-xs text-text-muted">Transit Buffer</span>
                   <span
                     className={`font-mono text-xs font-semibold ${
                       rake.targetDeltaMins > 0 ? 'text-primary' : 'text-secondary'
@@ -212,10 +223,10 @@ export const LiveRakeList: React.FC<LiveRakeListProps> = ({
                 >
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px]">verified</span>
-                    <span>UTS Mobile QR Pass Active: Season Ticket #CR-98401 • Valid till 14 Oct 2026</span>
+                    <span>UTS Suburban Season Ticket #CR-98401 Active • Valid across all lines</span>
                   </div>
                   <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-primary text-black">
-                    Verified
+                    Active
                   </span>
                 </motion.div>
               )}

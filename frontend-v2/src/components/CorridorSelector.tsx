@@ -64,28 +64,34 @@ export const CorridorSelector: React.FC<CorridorSelectorProps> = ({
 
           {/* Origin Selection Dropdown */}
           {originDropdownOpen && (
-            <div className="absolute left-0 top-full mt-2 w-72 max-h-64 p-2 rounded-2xl bg-surface-obsidian/98 border border-glass-border shadow-2xl overflow-y-auto flex flex-col gap-1 z-50">
-              <span className="px-3 py-1 font-mono text-[10px] uppercase text-text-muted font-semibold">
-                Select Origin Station
-              </span>
-              {ALL_MUMBAI_STATIONS.map((st) => (
-                <button
-                  key={`org-${st.code}`}
-                  onClick={() => {
-                    onSelectOrigin({ code: st.code, name: st.name });
-                    setOriginDropdownOpen(false);
-                  }}
-                  className={`px-3 py-2 rounded-xl text-left font-mono text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                    origin.code === st.code
-                      ? 'bg-primary/20 text-primary font-bold'
-                      : 'hover:bg-white/[0.06] text-text-primary'
-                  }`}
-                >
-                  <span>{st.name} [{st.code}]</span>
-                  <span className="text-[10px] text-text-muted font-sans">{st.line}</span>
-                </button>
-              ))}
-            </div>
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setOriginDropdownOpen(false)}
+              />
+              <div className="absolute left-0 top-full mt-2 w-72 max-h-64 p-2 rounded-2xl bg-[#0c0f13] border border-glass-border shadow-[0_10px_40px_rgba(0,0,0,0.85)] overflow-y-auto flex flex-col gap-1 z-50">
+                <span className="px-3 py-1 font-mono text-[10px] uppercase text-text-muted font-semibold">
+                  Select Origin Station
+                </span>
+                {ALL_MUMBAI_STATIONS.map((st) => (
+                  <button
+                    key={`org-${st.code}`}
+                    onClick={() => {
+                      onSelectOrigin({ code: st.code, name: st.name });
+                      setOriginDropdownOpen(false);
+                    }}
+                    className={`px-3 py-2 rounded-xl text-left font-mono text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      origin.code === st.code
+                        ? 'bg-primary/20 text-primary font-bold'
+                        : 'hover:bg-white/[0.06] text-text-primary'
+                    }`}
+                  >
+                    <span>{st.name} [{st.code}]</span>
+                    <span className="text-[10px] text-text-muted font-sans">{st.line}</span>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -136,28 +142,34 @@ export const CorridorSelector: React.FC<CorridorSelectorProps> = ({
 
           {/* Destination Selection Dropdown */}
           {destDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-72 max-h-64 p-2 rounded-2xl bg-surface-obsidian/98 border border-glass-border shadow-2xl overflow-y-auto flex flex-col gap-1 z-50">
-              <span className="px-3 py-1 font-mono text-[10px] uppercase text-text-muted font-semibold">
-                Select Destination Station
-              </span>
-              {ALL_MUMBAI_STATIONS.map((st) => (
-                <button
-                  key={`dest-${st.code}`}
-                  onClick={() => {
-                    onSelectDestination({ code: st.code, name: st.name });
-                    setDestDropdownOpen(false);
-                  }}
-                  className={`px-3 py-2 rounded-xl text-left font-mono text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                    destination.code === st.code
-                      ? 'bg-secondary/20 text-secondary font-bold'
-                      : 'hover:bg-white/[0.06] text-text-primary'
-                  }`}
-                >
-                  <span>{st.name} [{st.code}]</span>
-                  <span className="text-[10px] text-text-muted font-sans">{st.line}</span>
-                </button>
-              ))}
-            </div>
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setDestDropdownOpen(false)}
+              />
+              <div className="absolute right-0 top-full mt-2 w-72 max-h-64 p-2 rounded-2xl bg-[#0c0f13] border border-glass-border shadow-[0_10px_40px_rgba(0,0,0,0.85)] overflow-y-auto flex flex-col gap-1 z-50">
+                <span className="px-3 py-1 font-mono text-[10px] uppercase text-text-muted font-semibold">
+                  Select Destination Station
+                </span>
+                {ALL_MUMBAI_STATIONS.map((st) => (
+                  <button
+                    key={`dest-${st.code}`}
+                    onClick={() => {
+                      onSelectDestination({ code: st.code, name: st.name });
+                      setDestDropdownOpen(false);
+                    }}
+                    className={`px-3 py-2 rounded-xl text-left font-mono text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      destination.code === st.code
+                        ? 'bg-secondary/20 text-secondary font-bold'
+                        : 'hover:bg-white/[0.06] text-text-primary'
+                    }`}
+                  >
+                    <span>{st.name} [{st.code}]</span>
+                    <span className="text-[10px] text-text-muted font-sans">{st.line}</span>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
 

@@ -17,7 +17,6 @@ interface HeaderProps {
   } | null;
   currentPersona: PersonaType;
   onSelectPersona: (persona: PersonaType) => void;
-  onOpenAuth: () => void;
   onOpenEditProfile: () => void;
   onLogout: () => void;
 }
@@ -28,7 +27,6 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   currentPersona,
   onSelectPersona,
-  onOpenAuth,
   onOpenEditProfile,
   onLogout,
 }) => {
@@ -100,13 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Commuter Avatar Button */}
           <div className="relative">
             <button
-              onClick={() => {
-                if (!user) {
-                  onOpenAuth();
-                } else {
-                  setProfileOpen((prev) => !prev);
-                }
-              }}
+              onClick={() => setProfileOpen((prev) => !prev)}
               className="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-white/[0.03] backdrop-blur-xl border border-glass-border hover:bg-white/[0.06] hover:border-primary/40 transition-all cursor-pointer"
             >
               <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0 text-black font-bold text-xs">

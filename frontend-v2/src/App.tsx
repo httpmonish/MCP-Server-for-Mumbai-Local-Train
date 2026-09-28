@@ -141,23 +141,6 @@ export const MainApp: React.FC = () => {
           activeRake: data.activeRake,
           stations: data.stations,
         });
-
-        // Set line-appropriate default origin and destination when switching lines
-        if (data.stations.length >= 2) {
-          const first = data.stations[0];
-          const last = data.stations[data.stations.length - 1];
-          setOrigin({
-            code: first.code,
-            name: first.name,
-            platform: '02',
-            activeGate: 'Active Gate 1',
-          });
-          setDestination({
-            code: last.code,
-            name: last.name,
-            campus: `${activeLine.toUpperCase().replace('-', ' ')} Hub`,
-          });
-        }
       }
     };
     loadCorridor();
@@ -165,6 +148,28 @@ export const MainApp: React.FC = () => {
       mounted = false;
     };
   }, [activeLine, direction]);
+
+  // Set line-appropriate default origin and destination when switching activeLine
+  useEffect(() => {
+    const defaultStations = CORRIDOR_STATIONS[activeLine] || CORRIDOR_STATIONS['central-main'];
+    if (defaultStations.length >= 2) {
+      const first = defaultStations[0];
+      const last = defaultStations[defaultStations.length - 1];
+      setOrigin({
+        code: first.code,
+        name: first.name,
+        platform: '02',
+        activeGate: 'Active Gate 1',
+      });
+      setDestination({
+        code: last.code,
+        name: last.name,
+        campus: `${activeLine.toUpperCase().replace('-', ' ')} Hub`,
+      });
+      setIsReversed(false);
+      setDirection('DOWN');
+    }
+  }, [activeLine]);
 
   // 2. Fetch Train Schedules when origin, destination, corridor, or fastOnly changes
   useEffect(() => {
@@ -227,21 +232,23 @@ export const MainApp: React.FC = () => {
   const handleSwapCorridor = () => {
     const nextReversed = !isReversed;
     setIsReversed(nextReversed);
-    setDirection(nextReversed ? 'UP' : 'DOWN');
+    const nextDirection: Direction = nextReversed ? 'UP' : 'DOWN';
+    setDirection(nextDirection);
 
-    const tempOrigin = {
-      code: destination.code,
-      name: destination.name,
+    const prevOrigin = { ...origin };
+    const prevDestination = { ...destination };
+
+    setOrigin({
+      code: prevDestination.code,
+      name: prevDestination.name,
       platform: nextReversed ? '01' : '04',
-      activeGate: nextReversed ? 'Return Platform Gate' : '08:42 AM Active Gate',
-    };
-    const tempDest = {
-      code: origin.code,
-      name: origin.name,
-      campus: nextReversed ? 'Origin Terminal' : 'Destination Hub',
-    };
-    setOrigin(tempOrigin);
-    setDestination(tempDest);
+      activeGate: nextReversed ? 'Return Platform Gate' : 'Main Concourse Gate',
+    });
+    setDestination({
+      code: prevOrigin.code,
+      name: prevOrigin.name,
+      campus: `${prevOrigin.name} Transit Junction`,
+    });
   };
 
   // Station Pickers
@@ -292,7 +299,6 @@ export const MainApp: React.FC = () => {
         user={currentUser}
         currentPersona={persona}
         onSelectPersona={setPersona}
-        onOpenAuth={() => setAuthModalOpen(true)}
         onOpenEditProfile={() => setAuthModalOpen(true)}
         onLogout={handleLogout}
       />
@@ -330,12 +336,13 @@ export const MainApp: React.FC = () => {
                 selectedRakeId={selectedRakeId}
                 onSelectRake={setSelectedRakeId}
                 isLoading={isLoadingRakes}
+                persona={persona}
               />
             </div>
 
             {/* Column 2: Commute AI & Academic Attendance Radar (4 Cols) */}
             <aside className="lg:col-span-4 flex flex-col gap-6">
-              <AttendanceRadar riskData={riskData} tokenData={tokenData} />
+              <AttendanceRadar riskData={riskData} tokenData={tokenData} persona={persona} />
               <CoreTelemetry />
               <DispatchStream />
             </aside>

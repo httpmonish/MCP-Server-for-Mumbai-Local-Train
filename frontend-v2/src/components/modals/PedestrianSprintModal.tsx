@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import type { PersonaType } from './UserProfilePopover';
+
 interface PedestrianSprintModalProps {
   isOpen: boolean;
   onClose: () => void;
   trainArrivalTime?: string;
   lectureStartTime?: string;
+  persona?: PersonaType;
 }
 
 export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
@@ -13,6 +16,7 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
   onClose,
   trainArrivalTime = '09:23 AM',
   lectureStartTime = '09:30 AM',
+  persona = 'COMMUTER',
 }) => {
   const [secondsRemaining, setSecondsRemaining] = useState(420); // 7 minutes
 
@@ -51,7 +55,11 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
                   <span className="font-mono text-[10px] uppercase text-primary font-semibold tracking-wider">
                     Contingency Protocol A
                   </span>
-                  <h3 className="font-headline text-xl text-text-primary">Sprint Path: Matunga E. → VJTI</h3>
+                  <h3 className="font-headline text-xl text-text-primary">
+                    {persona === 'STUDENT'
+                      ? 'Sprint Path: Matunga E. → VJTI'
+                      : 'Express Egress & Rapid Transit Transfer'}
+                  </h3>
                 </div>
               </div>
               <button
@@ -71,7 +79,9 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
                 </span>
               </div>
               <div className="flex flex-col text-right">
-                <span className="font-mono text-[10px] text-text-muted">Dadar Arr → Lecture</span>
+                <span className="font-mono text-[10px] text-text-muted">
+                  {persona === 'STUDENT' ? 'Dadar Arr → Lecture' : 'Train Arr → Destination'}
+                </span>
                 <span className="font-mono text-xs text-text-primary">
                   {trainArrivalTime} → <span className="text-tertiary">{lectureStartTime}</span>
                 </span>
@@ -85,8 +95,14 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
                   1
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-body text-xs text-text-primary font-medium">De-board Matunga Station PF 1</span>
-                  <span className="font-body text-[11px] text-text-muted">Take Kalyan-end Foot Over Bridge towards East ticket counter.</span>
+                  <span className="font-body text-xs text-text-primary font-medium">
+                    {persona === 'STUDENT' ? 'De-board Matunga Station PF 1' : 'De-board Rake at Optimal Platform Exit'}
+                  </span>
+                  <span className="font-body text-[11px] text-text-muted">
+                    {persona === 'STUDENT'
+                      ? 'Take Kalyan-end Foot Over Bridge towards East ticket counter.'
+                      : 'Utilize mid-train Foot Over Bridge (FOB) for fast platform clearance.'}
+                  </span>
                 </div>
               </div>
 
@@ -95,8 +111,14 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
                   2
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-body text-xs text-text-primary font-medium">Exit to Dr. B.A. Road & Five Gardens</span>
-                  <span className="font-body text-[11px] text-text-muted">Cross signal at Maheshwari Udyan (2 mins walk).</span>
+                  <span className="font-body text-xs text-text-primary font-medium">
+                    {persona === 'STUDENT' ? 'Exit to Dr. B.A. Road & Five Gardens' : 'Concourse Ingress / Station Egress'}
+                  </span>
+                  <span className="font-body text-[11px] text-text-muted">
+                    {persona === 'STUDENT'
+                      ? 'Cross signal at Maheshwari Udyan (2 mins walk).'
+                      : 'Scan automatic fare collection gates or proceed through main exit concourse.'}
+                  </span>
                 </div>
               </div>
 
@@ -105,8 +127,16 @@ export const PedestrianSprintModal: React.FC<PedestrianSprintModalProps> = ({
                   3
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-body text-xs text-text-primary font-medium">Enter VJTI Mechanical Building Gate #3</span>
-                  <span className="font-body text-[11px] text-text-muted">Biometric Machine #04 is located on Ground Floor Quadrangle.</span>
+                  <span className="font-body text-xs text-text-primary font-medium">
+                    {persona === 'STUDENT'
+                      ? 'Enter VJTI Mechanical Building Gate #3'
+                      : 'Arrive at Target Destination Hub'}
+                  </span>
+                  <span className="font-body text-[11px] text-text-muted">
+                    {persona === 'STUDENT'
+                      ? 'Biometric Machine #04 is located on Ground Floor Quadrangle.'
+                      : 'On-schedule arrival completed within optimal buffer time.'}
+                  </span>
                 </div>
               </div>
             </div>
