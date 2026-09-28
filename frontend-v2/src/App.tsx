@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Header } from './components/Header';
 import { CorridorSelector } from './components/CorridorSelector';
@@ -11,6 +12,9 @@ import { Footer } from './components/Footer';
 import { AuthModal } from './components/AuthModal';
 import type { PersonaType } from './components/modals/UserProfilePopover';
 import { GapAnalysisDrawer } from './components/dev/GapAnalysisDrawer';
+import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import {
   fetchCorridorTelemetry,
   fetchTrainSchedule,
@@ -33,7 +37,27 @@ const queryClient = new QueryClient({
   },
 });
 
-export const MainApp: React.FC = () => {
+/* ─── DASHBOARD PAGE (former MainApp) ─── */
+const DashboardPage: React.FC<{
+  currentUser: {
+    name: string;
+    org: string;
+    role: string;
+    token: string;
+    prn?: string;
+    semester?: string;
+    utsPassId?: string;
+  } | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<{
+    name: string;
+    org: string;
+    role: string;
+    token: string;
+    prn?: string;
+    semester?: string;
+    utsPassId?: string;
+  } | null>>;
+}> = ({ currentUser, setCurrentUser }) => {
   const [activeLine, setActiveLine] = useState<CorridorId>('central-main');
   const [direction, setDirection] = useState<Direction>('DOWN');
   const [isReversed, setIsReversed] = useState(false);
@@ -42,17 +66,6 @@ export const MainApp: React.FC = () => {
   const [persona, setPersona] = useState<PersonaType>('COMMUTER'); // Normal commuter by default
   const [selectedRakeId, setSelectedRakeId] = useState<string>('95401');
   const [isLoadingRakes, setIsLoadingRakes] = useState(false);
-
-  // User Profile - null by default (Guest Commuter mode)
-  const [currentUser, setCurrentUser] = useState<{
-    name: string;
-    org: string;
-    role: string;
-    token: string;
-    prn?: string;
-    semester?: string;
-    utsPassId?: string;
-  } | null>(null);
 
   // Stations & Active Telemetry
   const [corridorTelemetry, setCorridorTelemetry] = useState<{
@@ -368,10 +381,47 @@ export const MainApp: React.FC = () => {
   );
 };
 
+/* ─── ROOT APP WITH ROUTING ─── */
 export default function App() {
+  // Shared auth state lifted to the top-level router
+  const [currentUser, setCurrentUser] = useState<{
+    name: string;
+    org: string;
+    role: string;
+    token: string;
+    prn?: string;
+    semester?: string;
+    utsPassId?: string;
+  } | null>(null);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <MainApp />
+      <Routes>
+        {/* Landing Page */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* Live Dashboard (Main Train Tracker) */}
+        <Route
+          path="/trains"
+          element={<DashboardPage currentUser={currentUser} setCurrentUser={setCurrentUser} />}
+        />
+
+        {/* Authentication Pages */}
+        <Route
+          path="/login"
+          element={<LoginPage onLoginSuccess={(user) => setCurrentUser(user)} />}
+        />
+        <Route
+          path="/register"
+          element={<RegisterPage onRegisterSuccess={(user) => setCurrentUser(user)} />}
+        />
+
+        {/* Legacy /dashboard redirect */}
+        <Route path="/dashboard" element={<Navigate to="/trains" replace />} />
+
+        {/* Catch-all → Landing */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </QueryClientProvider>
   );
 }

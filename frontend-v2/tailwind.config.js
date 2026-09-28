@@ -4,19 +4,18 @@ export default {
   content: [
     "./index.html",
     "./src/*.{js,ts,jsx,tsx}",
-    "./src/components/*.{js,ts,jsx,tsx}",
-    "./src/hooks/*.{js,ts,jsx,tsx}",
-    "./src/store/*.{js,ts,jsx,tsx}",
-    "./src/types/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       fontFamily: {
         headline: ['"EB Garamond"', 'serif'],
         'headline-italic': ['"EB Garamond"', 'serif'],
-        body: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
-        telemetry: ['"JetBrains Mono"', 'monospace'],
+        body: ['"Plus Jakarta Sans"', '"Space Grotesk"', 'Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', '"Space Mono"', 'monospace'],
+        telemetry: ['"JetBrains Mono"', '"Space Mono"', 'monospace'],
+        grotesk: ['"Space Grotesk"', 'sans-serif'],
+        'space-mono': ['"Space Mono"', 'monospace'],
       },
       colors: {
         'surface-obsidian': '#090A0C',
@@ -41,6 +40,11 @@ export default {
         tertiary: {
           DEFAULT: '#ffb2b7',
           container: '#ff7886',
+        },
+        accent: {
+          red: '#DC2626',
+          'red-hover': '#EF4444',
+          'red-glow': 'rgba(220, 38, 38, 0.15)',
         },
         'signal-rose': '#f43f5e',
         'signal-rose-glow': 'rgba(244, 63, 94, 0.15)',
